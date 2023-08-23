@@ -18,15 +18,6 @@
     border-style: solid;
 }
 
-/* .rectangle{
-    width: 270px;
-    height: 480px;
-    background-color: lightslategrey;
-    margin-left: 1240;
-    border: white;
-    border-style: solid;
-} */
-
 .p1{ /* name */
     margin-left: 1215;
     margin-top: -315;
@@ -54,7 +45,7 @@ a:link{
 }
 
 a:visited{
-    color: black;
+    color: white;
 }
 
 a:hover{

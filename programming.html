@@ -6,25 +6,79 @@
 
         p{
             color: white;
-            font-weight: bold;
             font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
         }
 
-        .grid-item {
+        .description {
             background-color: lightslategrey;
             border: 1px solid white;
             padding: 20px;
-            font-size: 30px;
+            font-size: 40px;
             color: white;
-            text-align: center;
+            text-align: left;
+            grid-template-columns: 1500px;
+        }
+
+        .techniqueUsed {
+            background-color: lightslategrey;
+            border: 1px solid white;
+            padding: 20px;
+            font-size: 40px;
+            color: white;
+            text-align: left;
+            width: 455px;
+            margin-top: -0.5px;
         }
         
         .grid-container {
             display: grid;
-            grid-template-columns: auto auto auto;
             background-color: lightslategrey;
             padding: 10px;
+            grid-template-columns: 1495px;
+            grid-template-rows: auto;
         }
+
+
+        .download {
+            background-color: lightslategrey;
+            border: 1px solid white;
+            padding: 20px;
+            font-size: 40px;
+            color: white;
+            text-align: left;
+            width: 350px;
+            margin-left: 1103px;
+            margin-top: -360px;
+        }
+
+        .downloadLink{
+            margin-left: 1122.5px;
+            margin-top: -275px;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+        }
+
+        ::-webkit-scrollbar{
+            width: 5px;
+        }
+
+                /* Track */
+        :-webkit-scrollbar-track {
+            background: white; 
+        }
+        
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: white; 
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: white; 
+        }
+
     </style>
     <link rel="shortcut icon" type="image/x-icon" href="gg logo no bg.png" />
   </head>
@@ -34,16 +88,24 @@
     <p><a href="./"><span>&#8592;</span> Back</a></p>
 
     <div class="grid-container">
-        <div class="grid-item">1</div>
-        <div class="grid-item">2</div>
-        <div class="grid-item">3</div>
-        <div class="grid-item">4</div>
-        <div class="grid-item">5</div>
-        <div class="grid-item">6</div>
-        <div class="grid-item">7</div>
-        <div class="grid-item">8</div>
-        <div class="grid-item">9</div>
-      </div>
+        <div class="description"><u>Description of program:</u>
+        <p>I developed a Java program for a jewellery store management system, leveraging custom-built internal data structures. 
+            The system enables seamless management of a jewellery store, comprising of multiple display cases, trays, and numerous jewellery items such as rings, watches, and necklaces. 
+            Each jewellery item consists of various materials/components, including gold, platinum, diamonds, and more, with varying quantities and qualities measured in grams or carats. 
+            To organize the items efficiently, I utilized linked lists to store and associate the jewellery items with display trays, which are further stored in display cases. 
+            This approach ensures optimal organization and retrieval of jewellery items within the system.</p>
+        </div>
+
+        <div class="techniqueUsed"><u>Techniques demonstrated:</u>
+        <p>In my Java jewellery store management system, I utilized custom-built internal data structures to efficiently manage the store. 
+            The system employs object-oriented programming principles present in some classes.
+            Linked lists were used to organize jewellery items in display trays stored within display cases. 
+            Additionally, I implemented a user-friendly graphical interface using JavaFX components. 
+            Serialization was employed to save and load data, ensuring persistence of the jewellery store system.</p>
+        </div>
+        <div class="download"><u>Download link:</u></div>
+        <p class="downloadLink">Click here to download <a href="//www.mediafire.com/file/2d2lu1h0tba4k4i/Programming_Assignment_1.zip/file" target="_blank"></a></p>
+    </div>
 
 
     
