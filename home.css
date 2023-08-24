@@ -3,7 +3,7 @@
     font-family:Arial, Helvetica, sans-serif;
     color: white;
     font-weight: bold;
-    margin-top: -518;
+    margin-top: -488;
 }
 
 .body{
@@ -11,33 +11,11 @@
 }
 
 .img{
-    margin-left: 1268;
+    margin-left: 1266;
     border-radius: 50%;
     margin-top: -490;
     border: white;
     border-style: solid;
-}
-
-.p1{ /* name */
-    margin-left: 1215;
-    margin-top: -315;
-}
-
-.p2{ /* age */
-    margin-left: 1215;
-    margin-top: -10;
-}
-
-.p3{ /* first link */
-    margin-top: -390;
-}
-
-.p4{ /* second link */
-    margin-top: 160;
-}
-
-.p5{ /* third link */
-    margin-top: 160;
 }
 
 a:link{
