@@ -10,6 +10,10 @@
     background-color: lightslategray;
 }
 
+#body{
+    background-color: lightskyblue;
+}
+
 .img{
     margin-left: 1266;
     border-radius: 50%;
@@ -29,3 +33,28 @@ a:visited{
 a:hover{
     color: darkblue;
 }
+
+.ui.tabular.menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1em;
+    background-color: orange;
+    height: 2em;
+    word-spacing: 14em;
+    text-indent: 2em;
+    width: 99%;
+    text-align: center;
+    position: fixed; /* Add this line */
+  }
+
+  .ui.tabular.menu .item {
+    font-family:PremierSans-Heavy,Arial,Helvetica Neue,Helvetica,sans-serif;
+    color: white;
+    font-weight:bold;   
+  }
+
+  .ui.tabular.menu .active.item {
+    background-color: orange;
+    color:white;
+  }
