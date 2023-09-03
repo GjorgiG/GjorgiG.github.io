@@ -5,32 +5,188 @@
     <style>
 
         p{
-            color: orange;
+            color: white;
             font-weight: bold;
             font-family: Arial, Helvetica, sans-serif;
         }
+
+        .imgPos{
+         width: 200px;
+         height: 200px;
+        }
+
+        #centre{
+          text-align: center;
+        }
+
+        button{
+          background-color: orange;
+          border-color: orange;
+          border: none;
+          font-size: 100%;
+          font-family:PremierSans-Heavy,Arial,Helvetica Neue,Helvetica,sans-serif;
+        }
+
+        .box{
+          display: flex;
+          font-family:PremierSans-Heavy,Arial,Helvetica Neue,Helvetica,sans-serif;
+          font-weight: bold;
+          background-color: orange;
+          color: white;
+          width: 100px;
+          height: 200px;
+          padding: 60px 11px;
+          border-radius: 4px;
+          margin-top: 5px;
+          width: 98.45%;
+          outline-color: white;
+          outline-style:solid;
+        }
+
+        .box p {
+          flex: 1;
+          margin-right: 20px;
+        }
+
+        .mini{
+          display: block;
+          font-family:PremierSans-Heavy,Arial,Helvetica Neue,Helvetica,sans-serif;
+          font-weight: bold;
+          background-color: orange;
+          color: white;
+          width: fit-content;
+          height: fit-content;
+          height: 200px;
+          padding: 60px 11px;
+          border-radius: 4px;
+          margin-top: 15px;
+          outline-color: white;
+          outline-style:solid
+        }
+
+        .miniStad{
+          display: block;
+          font-family:PremierSans-Heavy,Arial,Helvetica Neue,Helvetica,sans-serif;
+          font-weight: bold;
+          background-color: orange;
+          color: white;
+          width: fit-content;
+          height: 200px;
+          padding: 60px 11px;
+          border-radius: 4px;
+          margin-left: 650px;
+          outline-color: white;
+          outline-style:solid;
+          margin-top: -320px;
+        }
+
+        .boxTitle{
+          margin-top: -52px;
+          text-align: center;
+        }
+
+        #pos{
+          margin-left: 15px;
+        }
+
+        #cap{
+          margin-left: 358px;
+          margin-top: -19px;
+          text-decoration: underline;
+
+        }
+
+        #capPos{
+          margin-left: 90px;
+          text-decoration: underline;
+        }
+
+        /* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: lightblue; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: white; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: orange; 
+}
+
     </style>
     <link rel="shortcut icon" type="image/x-icon" href="gg logo no bg.png" />
   </head>
 
   <body id="body">
     <div class = "rectangle"></div>
-
-    <p><a href="./"><span>&#8592;</span> Back</a></p>
-
     
 
     <div class = "ui grid stackable container">
+      <p><a href="./"><span>&#8592;</span> Main</a></p>
       <div class="ui top attached tabular menu">
           <a class="active item">Home</a>
-          <a class="item">Fixtures</a>
-          <a class="item" href="history.html">History</a>
-          <a class="item" href="honours.html">Honours</a>
-          <a class="item" href="currentsquad.html">Squad</a>
-          <a class="item" href="stadium.html">Stadium</a>
-          <a class="item">Store</a>
+          <div class="dropdown">
+            <button><a class="item">Fixtures</a></button><i class="arrow down"></i>
+            <div class="dropdown-content">
+              <a href="#">Current Season</a>
+              <a href="#">All Seasons</a>
+            </div>
+        </div>
+          
+          
+        <a class="item" href="history.html">Stats</a>
+          <div class="dropdown">
+            <button><a class="item">Squad</a></button><i class="arrow down"></i>
+            <div class="dropdown-content">
+              <a href="#">Senior Squad</a>
+              <a href="#">Academy Squad</a>
+              <a href="#">U19 Squad</a>
+            </div>
+        </div>
+        <a class="item" href="history.html">History</a>
          </div>
 
 
-    
+        <div class="box">
+          <div><p>In this website I developed you can learn about FK Strumica, a club I manage on FM and you can take a quick look at achievements, have a look at the sqaud and dive into the numbers behind each player.
+            Gain a quick overview of FK Strumica's monumental accomplishments, from memorable league victories to remarkable cup triumphs. Immerse yourself in the club's glorious past, where heroes were made and legends were born.
+            But it doesn't stop there. Dive deeper into the heart of the team by exploring the squad section. Discover the talented individuals who form the backbone of FK Strumica. From seasoned veterans to promising young talents, each player brings their unique skills and personality to the pitch. Uncover their strengths, weaknesses, and fascinating statistics that shape their performances.
+            As you navigate through the website, you'll find comprehensive player profiles that showcase their career stats and key attributes. Analyze their playing style, preferred positions, and contributions to the team's success. Gain valuable insights into their development, transfer history, and potential future prospects.
+          </p></div> 
+          <div><img  class="imgPos" src="strumica.png" height="200" width="200"></div>
+        </div>
+
+        <div class="mini">
+          <div class="boxTitle">Kits</div>
+          <img src="strumica-home.png" height="250" width="250"><img id="pos" src="strumica-away.png" height="250" width="250">
+          <figcaption id="capPos">Buy here</figcaption><figcaption id="cap">Buy here</figcaption>
+        </div>
+
+
+        <div class="miniStad">
+          <div class="boxTitle">Blagoj Istatov Stadion</div>
+          <img src="stadium.jpg" height="250" width="250">
+          <figcaption id="centre">Capacity: 9,200</figcaption>
+          <figcaption id="centre">Opened in 1950</figcaption>
+        </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $(".dropdown").hover(function() {
+      $(this).find(".dropdown-content").css("display", "block");
+    }, function() {
+      $(this).find(".dropdown-content").css("display", "none");
+    });
+  });
+  </script>
+
   </body>
