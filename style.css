@@ -221,3 +221,33 @@
 .goals-section li {
   margin-bottom: 0.25rem;
 }
+
+.player-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.player-card h3 {
+  font-size: 1.25rem;
+  color: #1e90ff;
+  margin-bottom: 0.5rem;
+}
+
+.stats-section {
+  border-top: 1px solid #eee;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.stat-block {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #ddd;
+}
+
+.stat-block:last-child {
+  border-bottom: none;
+}
