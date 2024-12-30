@@ -9,7 +9,6 @@
 
   <title>Cloud Football Stats | Live Stats</title>
 
-  <!-- Google Fonts (Optional) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link 
@@ -17,11 +16,9 @@
     rel="stylesheet"
   />
 
-  <!-- Link to the external stylesheet -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Navigation -->
   <nav>
     <div class="nav-container">
       <h1><a href="index.html">Cloud Football Stats</a></h1>
@@ -33,16 +30,13 @@
     </div>
   </nav>
 
-  <!-- Page Content -->
   <section class="page-content">
     <h2>Live Stats (API-Football v3)</h2>
     <button id="fetch-button">Fetch Live Fixtures</button>
     <div id="results" class="api-results">
-      <!-- The fetched data will be rendered here -->
     </div>
   </section>
 
-  <!-- Footer -->
   <footer>
     <div class="footer-container">
       <p>
@@ -59,10 +53,11 @@
     const fetchButton = document.getElementById('fetch-button');
     const resultsDiv = document.getElementById('results');
 
-    
     const API_KEY = '245f485fbamsha0427459fdc1906p1f5565jsncd6357e3bb15';
 
     const getLiveFixtures = async () => {
+      resultsDiv.innerHTML = '';
+
       try {
         const response = await fetch('https://api-football-v1.p.rapidapi.com/v3/fixtures?live=all', {
           method: 'GET',
@@ -71,10 +66,48 @@
             'x-rapidapi-key': API_KEY
           }
         });
-        const data = await response.json();
 
-        
-        resultsDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        const data = await response.json();
+        const fixtures = data.response;
+
+        if (!fixtures || fixtures.length === 0) {
+          resultsDiv.innerHTML = '<p>No live fixtures at the moment.</p>';
+          return;
+        }
+
+        fixtures.forEach((fixtureObj) => {
+          const fixture = fixtureObj.fixture;
+          const league = fixtureObj.league;
+          const teams = fixtureObj.teams;
+          const goals = fixtureObj.goals;
+
+          const fixtureCard = document.createElement('div');
+          fixtureCard.classList.add('fixture-card');
+
+          const fixtureDate = new Date(fixture.date);
+          const options = { dateStyle: 'medium', timeStyle: 'short' };
+          const formattedDate = fixtureDate.toLocaleString(undefined, options);
+
+          fixtureCard.innerHTML = `
+            <h3>${league.name || 'Unknown League'}</h3>
+            <p><strong>Round:</strong> ${league.round || 'N/A'}</p>
+            <p><strong>Date & Time:</strong> ${formattedDate}</p>
+            <div class="teams-info">
+              <div class="team">
+                <img src="${teams.home.logo}" alt="${teams.home.name}" />
+                <span>${teams.home.name}</span>
+              </div>
+              <span class="score">${goals.home ?? '-'} : ${goals.away ?? '-'}</span>
+              <div class="team">
+                <img src="${teams.away.logo}" alt="${teams.away.name}" />
+                <span>${teams.away.name}</span>
+              </div>
+            </div>
+            <p><strong>Elapsed:</strong> ${fixture.status.elapsed || 0} min</p>
+          `;
+
+          resultsDiv.appendChild(fixtureCard);
+        });
       } catch (error) {
         console.error(error);
         resultsDiv.innerHTML = `<p style="color:red;">Error fetching data. Check console for details.</p>`;
