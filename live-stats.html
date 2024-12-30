@@ -106,6 +106,26 @@
             <p><strong>Elapsed:</strong> ${fixture.status.elapsed || 0} min</p>
           `;
 
+          if (events && events.length > 0) {
+            const goalEvents = events.filter((evt) => evt.type === 'Goal');
+            if (goalEvents.length > 0) {
+              let eventsHTML = '<div class="goals-section"><h4>Goal Scorers</h4><ul>';
+
+              goalEvents.forEach((g) => {
+                eventsHTML += `
+                  <li>
+                    <strong>${g.time.elapsed}'</strong> — 
+                    ${g.player?.name || 'Unknown'} 
+                    <em>(${g.team?.name || 'Team'})</em>
+                  </li>
+                `;
+              });
+
+              eventsHTML += '</ul></div>';
+              fixtureCard.innerHTML += eventsHTML;
+            }
+          }
+
           resultsDiv.appendChild(fixtureCard);
         });
       } catch (error) {
