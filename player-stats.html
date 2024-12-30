@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="Cloud Football Stats - Player Statistics" />
+  <meta name="keywords" content="Football, Stats, Cloud, Sports" />
+  <meta name="author" content="Your Name" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Cloud Football Stats | Player Statistics</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" 
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <h1><a href="index.html">Cloud Football Stats</a></h1>
+      <ul>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="live-stats.html">Live Scores</a></li>
+        <li><a href="player-stats.html">Player Stats</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="page-content">
+    <h2>Search Player Statistics</h2>
+    
+    <div class="player-search">
+      <label for="playerName">Player Name:</label>
+      <input type="text" id="playerName" placeholder="e.g., Messi" />
+      <button id="search-button">Search</button>
+    </div>
+
+    <div id="results" class="api-results"></div>
+  </section>
+
+  <footer>
+    <div class="footer-container">
+      <p>
+        &copy; 
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        Cloud Football Stats. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    const searchButton = document.getElementById('search-button');
+    const resultsDiv = document.getElementById('results');
+    const playerNameInput = document.getElementById('playerName');
+
+    const API_KEY = '245f485fbamsha0427459fdc1906p1f5565jsncd6357e3bb15';
+
+    const searchPlayerStats = async () => {
+      resultsDiv.innerHTML = '';
+
+      const playerName = playerNameInput.value.trim();
+      if (!playerName) {
+        resultsDiv.innerHTML = '<p>Please enter a player name.</p>';
+        return;
+      }
+
+      const leagueId = 39; // Example: Premier League
+      const seasonYear = 2023;
+
+      // Docs: https://www.api-football.com/documentation-v3#operation/get-players
+      const url = `https://api-football-v1.p.rapidapi.com/v3/players?search=${encodeURIComponent(playerName)}&league=${leagueId}&season=${seasonYear}`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+            'x-rapidapi-key': API_KEY
+          }
+        });
+
+        const data = await response.json();
+        const players = data.response;
+
+        if (!players || players.length === 0) {
+          resultsDiv.innerHTML = `<p>No players found for "${playerName}" in league ${leagueId}, season ${seasonYear}.</p>`;
+          return;
+        }
+
+        players.forEach((playerObj) => {
+          const { player, statistics } = playerObj;
+
+          const playerCard = document.createElement('div');
+          playerCard.classList.add('player-card');
+
+          // Basic info about the player
+          let playerInfo = `
+            <h3>${player.name || 'Unknown Player'}</h3>
+            <p><strong>Age:</strong> ${player.age || 'N/A'}</p>
+            <p><strong>Nationality:</strong> ${player.nationality || 'N/A'}</p>
+          `;
+
+          // We often have multiple statistics objects, e.g. one for each league/team
+          // For simplicity, let's just display the first or all of them
+          let statsHTML = '';
+          if (statistics && statistics.length > 0) {
+            statsHTML += '<div class="stats-section">';
+            statistics.forEach((stat) => {
+              const { team, games, goals } = stat;
+
+              statsHTML += `
+                <div class="stat-block">
+                  <h4>${team?.name || 'No Team'}</h4>
+                  <p><strong>Appearances:</strong> ${games?.appearances ?? 0}</p>
+                  <p><strong>Minutes:</strong> ${games?.minutes ?? 0}</p>
+                  <p><strong>Goals:</strong> ${goals?.total ?? 0}</p>
+                  <p><strong>Assists:</strong> ${goals?.assists ?? 0}</p>
+                </div>
+              `;
+            });
+            statsHTML += '</div>';
+          } else {
+            statsHTML += '<p>No statistics available for this player.</p>';
+          }
+
+          playerCard.innerHTML = playerInfo + statsHTML;
+
+          resultsDiv.appendChild(playerCard);
+        });
+      } catch (error) {
+        console.error(error);
+        resultsDiv.innerHTML = `<p style="color:red;">Error fetching data. Check console for details.</p>`;
+      }
+    };
+
+    searchButton.addEventListener('click', searchPlayerStats);
+  </script>
+</body>
+</html>
