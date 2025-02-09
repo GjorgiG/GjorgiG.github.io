@@ -15,6 +15,9 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" 
     rel="stylesheet"
   />
+  <link rel="stylesheet" href="https://pyscript.net/releases/2025.2.2/core.css">
+        <!-- This script tag bootstraps PyScript -->
+        <script type="module" src="https://pyscript.net/releases/2025.2.2/core.js"></script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -55,7 +58,29 @@
     </div>
   </footer>
 
-  <script>
+  <py-script>
+    import asyncio
+    import json
+
+    import aiohttp
+
+    from understat import Understat
+
+
+    async def main():
+        async with aiohttp.ClientSession() as session:
+          understat = Understat(session)
+          data = await understat.get_league_players("epl", 2018, {"team_title": "Manchester United"})
+          print(json.dumps(data))
+
+
+    if __name__ == "__main__":
+      loop = asyncio.new_event_loop()
+      asyncio.set_event_loop(loop)
+      loop.run_until_complete(main())
+    </py-script>
+
+  <!-- <script>
     const searchButton = document.getElementById('search-button');
     const resultsDiv = document.getElementById('results');
     const playerNameInput = document.getElementById('playerName');
@@ -141,6 +166,6 @@
     };
 
     searchButton.addEventListener('click', searchPlayerStats);
-  </script>
+  </script> -->
 </body>
 </html>
