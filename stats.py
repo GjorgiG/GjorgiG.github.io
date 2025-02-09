@@ -1,19 +1,19 @@
+from flask import Flask, jsonify
+from understatapi import UnderstatClient
 import asyncio
-import json
 
-import aiohttp
+app = Flask(__name__)
 
-from understat import Understat
+@app.route('/get_data')
+def get_data():
+    async def fetch_data():
+        client = UnderstatClient()
+        # Test to get player stats from Prem 20/21
+        players = await client.get_league_players("EPL", 2021)
+        return players
 
-
-async def main():
-    async with aiohttp.ClientSession() as session:
-        understat = Understat(session)
-        data = await understat.get_league_players("epl", 2018, {"team_title": "Manchester United"})
-        print(json.dumps(data))
-
-
-if __name__ == "__main__":
+    # Run the async function in an event loop
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+    data = loop.run_until_complete(fetch_data())
+    return jsonify(data)

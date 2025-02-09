@@ -15,8 +15,6 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" 
     rel="stylesheet"
   />
-  <script defer src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-<link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -57,38 +55,15 @@
     </div>
   </footer>
 
-  <py-script>
-    import json
-    import pyodide
-    from pyodide.http import pyfetch
-    
-    async def get_data():
-        try:
-            # Use PyScript's pyfetch instead of aiohttp
-            response = await pyfetch(
-                "https://understat.com/main/getPlayersStats/",
-                method="POST",
-                body=json.dumps({
-                    "league": "EPL",
-                    "season": "2018",
-                    "team_title": "Manchester United"
-                }),
-                headers={"Content-Type": "application/json"}
-            )
-            
-            data = await response.json()
-            display_data(data)
-        except Exception as e:
-            print(f"Error: {str(e)}")
-
-    def display_data(data):
-        results = document.getElementById("results")
-        results.innerHTML = "<pre>" + json.dumps(data, indent=2) + "</pre>"
-
-    # Schedule the async function
-    import asyncio
-    asyncio.ensure_future(get_data())
-  </py-script>
+  <script>
+    fetch('/get_data')
+      .then(response => response.json())
+      .then(data => {
+        const statsDiv = document.getElementById('stats');
+        statsDiv.innerText = JSON.stringify(data, null, 2);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  </script>
     
 
   <!-- <script>
