@@ -15,9 +15,8 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" 
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="https://pyscript.net/releases/2025.2.2/core.css">
-        <!-- This script tag bootstraps PyScript -->
-        <script type="module" src="https://pyscript.net/releases/2025.2.2/core.js"></script>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+   <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -58,7 +57,28 @@
     </div>
   </footer>
 
-    <script type="mpy" src="stats.py"></script>
+   <py-script>
+      import json
+      import pyodide
+      import asyncio
+      import aiohttp
+
+      from understat import Understat
+
+
+      async def main():
+        async with aiohttp.ClientSession() as session:
+          understat = Understat(session)
+          data = await understat.get_league_players("epl", 2018, {"team_title": "Manchester United"})
+          print(json.dumps(data))
+
+
+      if __name__ == "__main__":
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(main())
+
+   </py-script>
     
 
   <!-- <script>
@@ -91,7 +111,6 @@
             'x-rapidapi-key': API_KEY
           }
         });
-
         const data = await response.json();
         const players = data.response;
 
