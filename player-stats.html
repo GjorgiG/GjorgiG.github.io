@@ -15,8 +15,8 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" 
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-   <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  <script defer src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -57,28 +57,38 @@
     </div>
   </footer>
 
-   <py-script>
-      import json
-      import pyodide
-      import asyncio
-      import aiohttp
+  <py-script>
+    import json
+    import pyodide
+    from pyodide.http import pyfetch
+    
+    async def get_data():
+        try:
+            # Use PyScript's pyfetch instead of aiohttp
+            response = await pyfetch(
+                "https://understat.com/main/getPlayersStats/",
+                method="POST",
+                body=json.dumps({
+                    "league": "EPL",
+                    "season": "2018",
+                    "team_title": "Manchester United"
+                }),
+                headers={"Content-Type": "application/json"}
+            )
+            
+            data = await response.json()
+            display_data(data)
+        except Exception as e:
+            print(f"Error: {str(e)}")
 
-      from understat import Understat
+    def display_data(data):
+        results = document.getElementById("results")
+        results.innerHTML = "<pre>" + json.dumps(data, indent=2) + "</pre>"
 
-
-      async def main():
-        async with aiohttp.ClientSession() as session:
-          understat = Understat(session)
-          data = await understat.get_league_players("epl", 2018, {"team_title": "Manchester United"})
-          print(json.dumps(data))
-
-
-      if __name__ == "__main__":
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(main())
-
-   </py-script>
+    # Schedule the async function
+    import asyncio
+    asyncio.ensure_future(get_data())
+  </py-script>
     
 
   <!-- <script>
