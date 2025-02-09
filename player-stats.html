@@ -62,7 +62,8 @@
     import asyncio
     import json
 
-    import aiohttp
+    import pyodide_js
+    await pyodide_js.loadPackage('aiohttp') 
 
     from understat import Understat
 
