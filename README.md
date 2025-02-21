@@ -14,4 +14,4 @@
 
 Below is a demo video from semester one, demonstrating my project prototype. 
 
-[![Demo Video](https://img.youtube.com/vi/nSGGoUZY_sg/0.jpg)](https://youtu.be/5FHuUTC8gCQ)
+[![Demo Video](https://youtu.be/5FHuUTC8gCQ)]
