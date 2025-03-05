@@ -58,12 +58,65 @@
   <script>
     fetch('https://gjorgig-github-io.onrender.com/get_data')
       .then(response => response.json())
-      .then(data => {
+      .then(matches => {
         const statsDiv = document.getElementById('stats');
-        const jsonString = JSON.stringify(data, null, 2);
-        statsDiv.innerHTML = syntaxHighlight(jsonString);
-      })
-      .catch(error => console.error('Error fetching data:', error));
+        statsDiv.innerHTML = '';
+      
+
+      if (!matches || matches.length === 0) {
+        statsDiv.innerHTML = '<p>No matches found.</p>';
+        return;
+      }
+      
+
+      matches.forEach(match => {
+        const fixtureCard = document.createElement('div');
+        fixtureCard.classList.add('fixture-card');
+
+        const homeTeam = match.h.title;
+        const awayTeam = match.a.title; 
+        const homeGoals = match.goals.h;
+        const awayGoals = match.goals.a;
+        const dateTime = match.datetime;
+        const isFinal = match.isResult; 
+        const resultSymbol = match.result;
+        const xGHome = match.xG.h;
+        const xGAway = match.xG.a;
+
+        const dateObj = new Date(dateTime);
+        const formattedDate = dateObj.toLocaleString([], {
+          dateStyle: 'long',
+          timeStyle: 'short'
+        });
+
+        
+        fixtureCard.innerHTML = `
+          <h3>Premier League?</h3>
+          <p><strong>Date & Time:</strong> ${formattedDate}</p>
+          <p><strong>xG:</strong> ${xGHome} : ${xGAway}</p>
+          <div class="teams-info">
+            <div class="team">
+              <span>${homeTeam}</span>
+            </div>
+            <span class="score">${homeGoals} : ${awayGoals}</span>
+            <div class="team">
+              <span>${awayTeam}</span>
+            </div>
+          </div>
+          <p><strong>Final?</strong> ${isFinal ? 'Yes' : 'No'}</p>
+        `;
+
+        
+        if (resultSymbol) {
+          fixtureCard.innerHTML += `<p>Result Code: ${resultSymbol}</p>`;
+        }
+
+        statsDiv.appendChild(fixtureCard);
+      });
+    })
+    .catch(error => console.error('Error fetching data:', error));
+
+    
 
       // This will wrap all the JSON output into its own separate classes
       function syntaxHighlight(json) {
