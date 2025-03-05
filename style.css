@@ -251,3 +251,30 @@
 .stat-block:last-child {
   border-bottom: none;
 }
+
+.json-string {
+  color: #008000;
+}
+
+.json-number {
+  color: #a31515;
+  font-weight: 600;
+}
+
+.json-boolean {
+  color: #0000ff;
+  font-weight: 600;
+}
+
+/* Styles the whole thing */
+.api-results {
+  background-color: #f5f5f5; 
+  border: 1px solid #ddd;
+  padding: 1rem;
+  white-space: pre;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  line-height: 1.4;
+  overflow-x: auto;
+  border-radius: 4px;
+}
+

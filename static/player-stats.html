@@ -60,97 +60,34 @@
       .then(response => response.json())
       .then(data => {
         const statsDiv = document.getElementById('stats');
-        statsDiv.innerText = JSON.stringify(data, null, 2);
+        const jsonString = JSON.stringify(data, null, 2);
+        statsDiv.innerHTML = syntaxHighlight(jsonString);
       })
       .catch(error => console.error('Error fetching data:', error));
+
+      // This will wrap all the JSON output into its own separate classes
+      function syntaxHighlight(json) {
+    json = json
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    
+    return json
+      .replace(
+        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^"\\])*")/g,
+        '<span class="json-string">$1</span>'
+      )
+      .replace(
+        /\b(true|false|null)\b/g,
+        '<span class="json-boolean">$1</span>'
+      )
+      .replace(
+        /\b-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?\b/g,
+        '<span class="json-number">$&</span>'
+      );
+      }
   </script>
     
 
-  <!-- <script>
-    const searchButton = document.getElementById('search-button');
-    const resultsDiv = document.getElementById('results');
-    const playerNameInput = document.getElementById('playerName');
-
-    const API_KEY = '245f485fbamsha0427459fdc1906p1f5565jsncd6357e3bb15';
-
-    const searchPlayerStats = async () => {
-      resultsDiv.innerHTML = '';
-
-      const playerName = playerNameInput.value.trim();
-      if (!playerName) {
-        resultsDiv.innerHTML = '<p>Please enter a player name.</p>';
-        return;
-      }
-
-      const leagueId = 39; // Example: Premier League
-      const seasonYear = 2023;
-
-      // Docs: https://www.api-football.com/documentation-v3#operation/get-players
-      const url = `https://api-football-v1.p.rapidapi.com/v3/players?search=${encodeURIComponent(playerName)}&league=${leagueId}&season=${seasonYear}`;
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
-            'x-rapidapi-key': API_KEY
-          }
-        });
-        const data = await response.json();
-        const players = data.response;
-
-        if (!players || players.length === 0) {
-          resultsDiv.innerHTML = `<p>No players found for "${playerName}" in league ${leagueId}, season ${seasonYear}.</p>`;
-          return;
-        }
-
-        players.forEach((playerObj) => {
-          const { player, statistics } = playerObj;
-
-          const playerCard = document.createElement('div');
-          playerCard.classList.add('player-card');
-
-          // Basic info about the player
-          let playerInfo = `
-            <h3>${player.name || 'Unknown Player'}</h3>
-            <p><strong>Age:</strong> ${player.age || 'N/A'}</p>
-            <p><strong>Nationality:</strong> ${player.nationality || 'N/A'}</p>
-          `;
-
-          // We often have multiple statistics objects, e.g. one for each league/team
-          // For simplicity, let's just display the first or all of them
-          let statsHTML = '';
-          if (statistics && statistics.length > 0) {
-            statsHTML += '<div class="stats-section">';
-            statistics.forEach((stat) => {
-              const { team, games, goals } = stat;
-
-              statsHTML += `
-                <div class="stat-block">
-                  <h4>${team?.name || 'No Team'}</h4>
-                  <p><strong>Appearances:</strong> ${games?.appearances ?? 0}</p>
-                  <p><strong>Minutes:</strong> ${games?.minutes ?? 0}</p>
-                  <p><strong>Goals:</strong> ${goals?.total ?? 0}</p>
-                  <p><strong>Assists:</strong> ${goals?.assists ?? 0}</p>
-                </div>
-              `;
-            });
-            statsHTML += '</div>';
-          } else {
-            statsHTML += '<p>No statistics available for this player.</p>';
-          }
-
-          playerCard.innerHTML = playerInfo + statsHTML;
-
-          resultsDiv.appendChild(playerCard);
-        });
-      } catch (error) {
-        console.error(error);
-        resultsDiv.innerHTML = `<p style="color:red;">Error fetching data. Check console for details.</p>`;
-      }
-    };
-
-    searchButton.addEventListener('click', searchPlayerStats);
-  </script> -->
 </body>
 </html>
