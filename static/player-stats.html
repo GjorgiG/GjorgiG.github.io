@@ -78,7 +78,6 @@
         const homeGoals = match.goals.h;
         const awayGoals = match.goals.a;
         const dateTime = match.datetime;
-        const isFinal = match.isResult; 
         const resultSymbol = match.result;
         const xGHome = match.xG.h;
         const xGAway = match.xG.a;
@@ -91,7 +90,7 @@
 
         
         fixtureCard.innerHTML = `
-          <h3>Premier League?</h3>
+          <h3>Premier League</h3>
           <p><strong>Date & Time:</strong> ${formattedDate}</p>
           <p><strong>xG:</strong> ${xGHome} : ${xGAway}</p>
           <div class="teams-info">
@@ -103,7 +102,6 @@
               <span>${awayTeam}</span>
             </div>
           </div>
-          <p><strong>Final?</strong> ${isFinal ? 'Yes' : 'No'}</p>
         `;
 
         

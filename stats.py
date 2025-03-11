@@ -16,7 +16,7 @@ def get_data():
     async def fetch_data():
         client = UnderstatClient()
         
-        team_match_data = client.team(team="Manchester_United").get_match_data(season="2023")
+        team_match_data = client.team(team="Manchester_United").get_match_data(season="2025")
         
         return team_match_data
 
