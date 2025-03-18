@@ -78,7 +78,6 @@
         const homeGoals = match.goals.h;
         const awayGoals = match.goals.a;
         const dateTime = match.datetime;
-        const resultSymbol = match.result;
         const xGHome = match.xG.h;
         const xGAway = match.xG.a;
 
@@ -103,11 +102,6 @@
             </div>
           </div>
         `;
-
-        
-        if (resultSymbol) {
-          fixtureCard.innerHTML += `<p>Result Code: ${resultSymbol}</p>`;
-        }
 
         statsDiv.appendChild(fixtureCard);
       });
