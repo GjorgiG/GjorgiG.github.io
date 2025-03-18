@@ -34,13 +34,49 @@
   <section class="page-content">
     <h2>Search Player Statistics</h2>
     
-    <div class="player-search">
-      <label for="playerName">Player Name:</label>
-      <input type="text" id="playerName" placeholder="e.g., Messi" />
-      <button id="search-button">Search</button>
-    </div>
+    <div style="margin-bottom: 1rem;">
+      <label for="teamSelect">Team:</label>
+      <select id="teamSelect">
+        <option value="Arsenal">Arsenal</option>
+        <option value="Aston_Villa">Aston Villa</option>
+        <option value="Bournemouth">Bournemouth</option>
+        <option value="Brentford">Brentford</option>
+        <option value="Brighton">Brighton</option>
+        <option value="Chelsea">Chelsea</option>
+        <option value="Crystal_Palace">Crystal Palace</option>
+        <option value="Everton">Everton</option>
+        <option value="Fulham">Fulham</option>
+        <option value="Chelsea">Chelsea</option>
+        <option value="Ipswich">Ipswich</option>
+        <option value="Leicester">Leicester</option>
+        <option value="Liverpool">Liverpool</option>
+        <option value="Manchester_City">Manchester City</option>
+        <option value="Manchester_United">Manchester United</option>
+        <option value="Newcastle_United">Newcastle United</option>
+        <option value="Nottingham_Forest">Nottingham Forest</option>
+        <option value="Southampton">Southampton</option>
+        <option value="Tottenham">Tottenham</option>
+        <option value="West_Ham">West Ham</option>
+        <option value="Wolverhampton_Wanderers">Wolverhampton Wanderers</option>
+      </select>
 
-    <div id="stats" class="api-results"></div>
+      <label for="seasonSelect">Season:</label>
+      <select id="seasonSelect">
+        <option value="2019">2015</option>
+        <option value="2019">2016</option>
+        <option value="2019">2017</option>
+        <option value="2019">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025" selected>2025</option>
+      </select>
+
+      <button id="fetch-button">Fetch Data</button>
+    </div>
   </section>
 
   <footer>
@@ -56,11 +92,27 @@
   </footer>
 
   <script>
-    fetch('https://gjorgig-github-io.onrender.com/get_data')
-      .then(response => response.json())
-      .then(matches => {
-        const statsDiv = document.getElementById('stats');
-        statsDiv.innerHTML = '';
+    const statsDiv = document.getElementById('stats');
+    const fetchButton = document.getElementById('fetch-button');
+
+    fetchButton.addEventListener('click', () => {
+      // Read selected team & season from the dropdowns
+      const selectedTeam = document.getElementById('teamSelect').value;
+      const selectedSeason = document.getElementById('seasonSelect').value;
+
+      // Construct the URL with query parameters
+      // e.g. /get_data?team=Arsenal&season=2023
+      const url = `/get_data?team=${encodeURIComponent(selectedTeam)}&season=${encodeURIComponent(selectedSeason)}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(matches => {
+          statsDiv.innerHTML = '';
+    // fetch('https://gjorgig-github-io.onrender.com/get_data')
+    //   .then(response => response.json())
+    //   .then(matches => {
+    //     const statsDiv = document.getElementById('stats');
+    //     statsDiv.innerHTML = '';
       
 
       if (!matches || matches.length === 0) {
@@ -107,30 +159,30 @@
       });
     })
     .catch(error => console.error('Error fetching data:', error));
-
+  });
     
 
-      // This will wrap all the JSON output into its own separate classes
-      function syntaxHighlight(json) {
-    json = json
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+    //   // This will wrap all the JSON output into its own separate classes
+    //   function syntaxHighlight(json) {
+    // json = json
+    //   .replace(/&/g, '&amp;')
+    //   .replace(/</g, '&lt;')
+    //   .replace(/>/g, '&gt;');
     
-    return json
-      .replace(
-        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^"\\])*")/g,
-        '<span class="json-string">$1</span>'
-      )
-      .replace(
-        /\b(true|false|null)\b/g,
-        '<span class="json-boolean">$1</span>'
-      )
-      .replace(
-        /\b-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?\b/g,
-        '<span class="json-number">$&</span>'
-      );
-      }
+    // return json
+    //   .replace(
+    //     /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^"\\])*")/g,
+    //     '<span class="json-string">$1</span>'
+    //   )
+    //   .replace(
+    //     /\b(true|false|null)\b/g,
+    //     '<span class="json-boolean">$1</span>'
+    //   )
+    //   .replace(
+    //     /\b-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?\b/g,
+    //     '<span class="json-number">$&</span>'
+    //   );
+    //   }
   </script>
     
 
