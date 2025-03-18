@@ -102,7 +102,7 @@
 
       // Construct the URL with query parameters
       // e.g. /get_data?team=Arsenal&season=2023
-      const url = `/get_data?team=${encodeURIComponent(selectedTeam)}&season=${encodeURIComponent(selectedSeason)}`;
+      const url = `https://gjorgig-github-io.onrender.com/get_data?team=${encodeURIComponent(selectedTeam)}&season=${encodeURIComponent(selectedSeason)}`;
 
       fetch(url)
         .then(response => response.json())
