@@ -19,7 +19,7 @@ def get_data():
     async def fetch_data(selected_team, selected_season):
         async with aiohttp.ClientSession() as session:
             understat = Understat(session)
-            data = await understat.get_team_fixtures(team_name=selected_team, season=selected_season)
+            data = await understat.get_team_results(team_name=selected_team, season=selected_season)
             return data
 
     loop = asyncio.new_event_loop()
