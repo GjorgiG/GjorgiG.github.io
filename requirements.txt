@@ -1,4 +1,5 @@
 Flask
 flask-cors
-understatapi
+understat
+aiohttp
 gunicorn
