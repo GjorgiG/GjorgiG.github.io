@@ -1,6 +1,6 @@
 # FYP 2 Showcase 1 Landing Page - Pitch Perfect Stats
 
-![Pitch-Perfect Stats Logo](https://raw.githubusercontent.com/GjorgiG/GjorgiG.github.io/refs/heads/main/images/Pitch_Perfect.png) Will be added later
+![Pitch-Perfect Stats Logo](https://raw.githubusercontent.com/GjorgiG/GjorgiG.github.io/refs/heads/main/images/Pitch_Perfect.png)
 
 | Name             | Gjorgi Gjorgiev |
 |------------------|-------------|
