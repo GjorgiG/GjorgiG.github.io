@@ -9,7 +9,7 @@ CORS(app)
 
 @app.route('/')
 def index():
-    return app.send_static_file('player-stats.html')
+    return app.send_static_file('results.html')
 
 @app.route('/get_data')
 def get_data():
