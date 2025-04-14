@@ -7,6 +7,24 @@
   <title>Cloud Football Stats | Player Statistics</title>
   <link rel="stylesheet" href="../style.css" />
   <style>
+
+.shot-map-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem auto;
+  width: 800px;
+  height: 550px;
+  border: 1px solid #444;
+  border-radius: 12px;
+  position: relative;
+}
+    
+#shotChart {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
   </style>
 </head>
 <body>
@@ -28,6 +46,9 @@
     <h2>Search Player Shots</h2>
 
     <label for="playerSearch">Search Player:</label>
+    <div class="shot-map-wrapper">
+      <canvas id="shotChart" width="800" height="550"></canvas>
+    </div>
     <input type="text" id="playerSearch" placeholder="e.g. Haaland, Saka, Palmer" />
     <button id="search-button">Search</button>
 
@@ -94,8 +115,8 @@
 
       // Map shot data into chart points
       const chartData = shots.map(shot => ({
-        x: parseFloat(shot.X) * 100,
-        y: (1 - parseFloat(shot.Y)) * 100, // invert Y to match football pitch
+        x: parseFloat(shot.X) * 120,
+        y: (1 - parseFloat(shot.Y)) * 80,
         xG: parseFloat(shot.xG),
         result: shot.result
       }));
@@ -140,12 +161,12 @@
           scales: {
             x: {
               min: 0,
-              max: 100,
+              max: 120,
               display: false
             },
             y: {
               min: 0,
-              max: 100,
+              max: 80,
               display: false
             }
           }
