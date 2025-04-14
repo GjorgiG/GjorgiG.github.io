@@ -7,75 +7,83 @@
   <title>Cloud Football Stats | Player Statistics</title>
   <link rel="stylesheet" href="../style.css" />
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-    }
-
     .page-content {
-      padding: 2rem;
-      max-width: 1000px;
-      margin: auto;
-      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
     }
-
-    .search-bar {
-      margin-bottom: 1.5rem;
+    
+    .search-container {
+      margin: 2rem 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
-
-    #playerSearch {
+    
+    .search-container input {
       padding: 0.5rem;
-      font-size: 1rem;
-      width: 250px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      width: 300px;
     }
-
-    #search-button {
+    
+    .search-container button {
       padding: 0.5rem 1rem;
-      font-size: 1rem;
-      margin-left: 0.5rem;
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
-
+    
     .dropdown-results {
       list-style: none;
       padding: 0;
-      margin-top: 0.5rem;
-      max-height: 150px;
+      margin: 0;
+      max-height: 200px;
       overflow-y: auto;
-      background: #fff;
-      width: 300px;
-      margin: auto;
       border: 1px solid #ccc;
-      text-align: left;
+      border-radius: 4px;
+      background-color: white;
+      position: absolute;
+      width: 300px;
+      z-index: 10;
     }
-
+    
     .dropdown-results li {
       padding: 0.5rem;
       cursor: pointer;
-      border-bottom: 1px solid #eee;
     }
-
+    
     .dropdown-results li:hover {
       background-color: #f5f5f5;
     }
-
+    
     .shot-map-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 2rem auto;
+      margin: 1rem auto;
       width: 800px;
       height: 550px;
       border: 1px solid #444;
       border-radius: 12px;
       position: relative;
-      background: url('https://raw.githubusercontent.com/statsbomb/open-data/master/docs/img/Soccer-Pitch-Dimensions.png') no-repeat center center;
-      background-size: contain;
+      background-color: #f9f9f9;
     }
-
-    #shotChart {
-      position: absolute;
-      top: 0;
-      left: 0;
+    
+    .shot-map-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .api-results {
+      margin-top: 1rem;
+    }
+    
+    .search-wrapper {
+      position: relative;
     }
   </style>
 </head>
@@ -94,18 +102,22 @@
 
   <section class="page-content">
     <h2>Search Player Shots</h2>
-
-    <div class="search-bar">
+    
+    <div class="search-container">
       <label for="playerSearch">Search Player:</label>
-      <input type="text" id="playerSearch" placeholder="e.g. Haaland, Saka, Palmer" />
+      <div class="search-wrapper">
+        <input type="text" id="playerSearch" placeholder="e.g. Haaland, Saka, Palmer" />
+        <ul id="playerResults" class="dropdown-results"></ul>
+      </div>
       <button id="search-button">Search</button>
-      <ul id="playerResults" class="dropdown-results"></ul>
     </div>
 
-    <div class="shot-map-wrapper">
-      <canvas id="shotChart" width="800" height="550"></canvas>
+    <div class="shot-map-container">
+      <div class="shot-map-wrapper">
+        <canvas id="shotChart" width="800" height="550"></canvas>
+      </div>
     </div>
-
+    
     <div id="stats" class="api-results"></div>
   </section>
 
@@ -166,6 +178,7 @@
 
           const ctx = document.getElementById('shotChart').getContext('2d');
 
+          // Map shot data into chart points
           const chartData = shots.map(shot => ({
             x: parseFloat(shot.X) * 120,
             y: (1 - parseFloat(shot.Y)) * 80,
@@ -173,6 +186,7 @@
             result: shot.result
           }));
 
+          // Colors for different results
           const colorMap = {
             Goal: 'green',
             MissedShots: 'red',
@@ -182,10 +196,12 @@
             '': 'gray'
           };
 
+          // Destroy old chart if exists
           if (window.shotChartInstance) {
             window.shotChartInstance.destroy();
           }
 
+          // Create new chart
           window.shotChartInstance = new Chart(ctx, {
             type: 'scatter',
             data: {
@@ -193,7 +209,7 @@
                 label: 'Shots',
                 data: chartData,
                 backgroundColor: chartData.map(s => colorMap[s.result] || 'gray'),
-                radius: chartData.map(s => s.xG * 15),
+                radius: chartData.map(s => s.xG * 15), // xG influences circle size
               }]
             },
             options: {
@@ -205,9 +221,6 @@
                       return `xG: ${shot.xG.toFixed(2)}, Result: ${shot.result}`;
                     }
                   }
-                },
-                legend: {
-                  display: false
                 }
               },
               scales: {
@@ -230,6 +243,43 @@
           statsDiv.innerHTML = '<p>Error loading shot data</p>';
         });
     }
+
+    // Initialize an empty chart
+    const ctx = document.getElementById('shotChart').getContext('2d');
+    window.shotChartInstance = new Chart(ctx, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'Shots',
+          data: [],
+          backgroundColor: [],
+          radius: []
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            min: 0,
+            max: 120,
+            display: false
+          },
+          y: {
+            min: 0,
+            max: 80,
+            display: false
+          }
+        }
+      }
+    });
   </script>
 </body>
 </html>
