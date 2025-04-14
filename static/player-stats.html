@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cloud Football Stats | Player Statistics</title>
@@ -20,6 +21,8 @@
       </ul>
     </div>
   </nav>
+
+  <canvas id="shotChart" width="600" height="400" style="margin-top: 2rem;"></canvas>
 
   <section class="page-content">
     <h2>Search Player Shots</h2>
@@ -76,36 +79,84 @@
     });
 
     function fetchShots(playerId) {
-      statsDiv.innerHTML = '<p>Loading...</p>';
-      fetch(`https://player-stats-rk79.onrender.com/get_shots?player_id=${playerId}&season=2022`)
-        .then(res => res.json())
-        .then(shots => {
-          statsDiv.innerHTML = '';
+  statsDiv.innerHTML = '<p>Loading...</p>';
+  fetch(`https://player-stats-rk79.onrender.com/get_shots?player_id=${playerId}&season=2022`)
+    .then(res => res.json())
+    .then(shots => {
+      statsDiv.innerHTML = '';
 
-          if (!shots || !shots.length) {
-            statsDiv.innerHTML = '<p>No shots found for this player.</p>';
-            return;
+      if (!shots || !shots.length) {
+        statsDiv.innerHTML = '<p>No shots found for this player.</p>';
+        return;
+      }
+
+      const ctx = document.getElementById('shotChart').getContext('2d');
+
+      // Map shot data into chart points
+      const chartData = shots.map(shot => ({
+        x: parseFloat(shot.X) * 100,
+        y: (1 - parseFloat(shot.Y)) * 100, // invert Y to match football pitch
+        xG: parseFloat(shot.xG),
+        result: shot.result
+      }));
+
+      // Colors for different results
+      const colorMap = {
+        Goal: 'green',
+        MissedShots: 'red',
+        BlockedShot: 'orange',
+        SavedShot: 'blue',
+        ShotOnPost: 'purple',
+        '': 'gray'
+      };
+
+      // Destroy old chart if exists
+      if (window.shotChartInstance) {
+        window.shotChartInstance.destroy();
+      }
+
+      // Create new chart
+      window.shotChartInstance = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Shots',
+            data: chartData,
+            backgroundColor: chartData.map(s => colorMap[s.result] || 'gray'),
+            radius: chartData.map(s => s.xG * 15), // xG influences circle size
+          }]
+        },
+        options: {
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const shot = context.raw;
+                  return `xG: ${shot.xG.toFixed(2)}, Result: ${shot.result}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: 0,
+              max: 100,
+              display: false
+            },
+            y: {
+              min: 0,
+              max: 100,
+              display: false
+            }
           }
-
-          shots.forEach(shot => {
-            const card = document.createElement('div');
-            card.classList.add('player-card');
-            card.innerHTML = `
-              <p><strong>Date:</strong> ${shot.date}</p>
-              <p><strong>Opponent:</strong> ${shot.a}</p>
-              <p><strong>Result:</strong> ${shot.result}</p>
-              <p><strong>xG:</strong> ${parseFloat(shot.xG).toFixed(2)}</p>
-              <p><strong>Shot Type:</strong> ${shot.shotType || 'N/A'}</p>
-              <p><strong>Location:</strong> X: ${shot.X}, Y: ${shot.Y}</p>
-            `;
-            statsDiv.appendChild(card);
-          });
-        })
-        .catch(err => {
-          console.error(err);
-          statsDiv.innerHTML = '<p>Error loading shot data</p>';
-        });
-    }
+        }
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      statsDiv.innerHTML = '<p>Error loading shot data</p>';
+    });
+}
   </script>
 </body>
 </html>
