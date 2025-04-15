@@ -363,68 +363,7 @@
 
     function renderShotMap(shots) {
       const ctx = document.getElementById('shotChart').getContext('2d');
-      
-      // Draw a football pitch
-      function drawPitch(ctx) {
-        // Field dimensions
-        const fieldWidth = 120;
-        const fieldHeight = 80;
-        const penaltyBoxWidth = 44;
-        const penaltyBoxHeight = 18;
-        const goalBoxWidth = 20;
-        const goalBoxHeight = 6;
-        const centerCircleRadius = 10;
-        const goalWidth = 8;
-        
-        ctx.save();
-        
-        // Draw field outline
-        ctx.strokeStyle = 'rgba(150, 150, 150, 0.5)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(0, 0, fieldWidth, fieldHeight);
-        
-        // Draw halfway line
-        ctx.beginPath();
-        ctx.moveTo(fieldWidth / 2, 0);
-        ctx.lineTo(fieldWidth / 2, fieldHeight);
-        ctx.stroke();
-        
-        // Draw center circle
-        ctx.beginPath();
-        ctx.arc(fieldWidth / 2, fieldHeight / 2, centerCircleRadius, 0, Math.PI * 2);
-        ctx.stroke();
-        
-        // Draw penalty boxes
-        // Left penalty box
-        ctx.strokeRect(0, (fieldHeight - penaltyBoxHeight) / 2, penaltyBoxWidth, penaltyBoxHeight);
-        // Right penalty box
-        ctx.strokeRect(fieldWidth - penaltyBoxWidth, (fieldHeight - penaltyBoxHeight) / 2, penaltyBoxWidth, penaltyBoxHeight);
-        
-        // Draw goal boxes
-        // Left goal box
-        ctx.strokeRect(0, (fieldHeight - goalBoxHeight) / 2, goalBoxWidth, goalBoxHeight);
-        // Right goal box
-        ctx.strokeRect(fieldWidth - goalBoxWidth, (fieldHeight - goalBoxHeight) / 2, goalBoxWidth, goalBoxHeight);
-        
-        // Draw goals
-        // Left goal
-        ctx.strokeRect(-2, (fieldHeight - goalWidth) / 2, 2, goalWidth);
-        // Right goal
-        ctx.strokeRect(fieldWidth, (fieldHeight - goalWidth) / 2, 2, goalWidth);
-        
-        // Draw penalty spots
-        ctx.fillStyle = 'rgba(150, 150, 150, 0.5)';
-        // Left penalty spot
-        ctx.beginPath();
-        ctx.arc(11, fieldHeight / 2, 0.5, 0, Math.PI * 2);
-        ctx.fill();
-        // Right penalty spot
-        ctx.beginPath();
-        ctx.arc(fieldWidth - 11, fieldHeight / 2, 0.5, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.restore();
-      }
+    
 
       // Map shot data into chart points
       const chartData = shots.map(shot => ({
@@ -455,12 +394,9 @@
         data: {
           datasets: [{
             label: 'Shots',
-            data: chartData,
-            backgroundColor: chartData.map(s => colorMap[s.result] || 'gray'),
-            borderColor: 'rgba(0,0,0,0.1)',
-            borderWidth: 1,
-            radius: chartData.map(s => Math.max(5, s.xG * 20)), // xG influences circle size with minimum size
-            pointHoverRadius: chartData.map(s => Math.max(5, s.xG * 20) + 2),
+            data: [],
+            backgroundColor: [],
+            radius:[]
           }]
         },
         options: {
@@ -495,7 +431,7 @@
             ctx.save();
             ctx.fillStyle = "#f9f9f9";
             ctx.fillRect(0, 0, chart.width, chart.height);
-            drawPitch(ctx);
+          
             ctx.restore();
           }
         }]
@@ -507,7 +443,7 @@
     window.shotChartInstance = new Chart(ctx, {
       type: 'scatter',
       data: {
-  datasets: [{
+      datasets: [{
     label: 'Shots',
     data: chartData,
     backgroundColor: chartData.map(s => colorMap[s.result] || 'gray'),
@@ -560,65 +496,7 @@
           ctx.fillStyle = "#f9f9f9";
           ctx.fillRect(0, 0, chart.width, chart.height);
           
-          // Draw a football pitch
-          function drawPitch(ctx) {
-            // Field dimensions
-            const fieldWidth = 120;
-            const fieldHeight = 80;
-            const penaltyBoxWidth = 44;
-            const penaltyBoxHeight = 18;
-            const goalBoxWidth = 20;
-            const goalBoxHeight = 6;
-            const centerCircleRadius = 10;
-            const goalWidth = 8;
-            
-            // Draw field outline
-            ctx.strokeStyle = 'rgba(150, 150, 150, 0.5)';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(0, 0, fieldWidth, fieldHeight);
-            
-            // Draw halfway line
-            ctx.beginPath();
-            ctx.moveTo(fieldWidth / 2, 0);
-            ctx.lineTo(fieldWidth / 2, fieldHeight);
-            ctx.stroke();
-            
-            // Draw center circle
-            ctx.beginPath();
-            ctx.arc(fieldWidth / 2, fieldHeight / 2, centerCircleRadius, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            // Draw penalty boxes
-            // Left penalty box
-            ctx.strokeRect(0, (fieldHeight - penaltyBoxHeight) / 2, penaltyBoxWidth, penaltyBoxHeight);
-            // Right penalty box
-            ctx.strokeRect(fieldWidth - penaltyBoxWidth, (fieldHeight - penaltyBoxHeight) / 2, penaltyBoxWidth, penaltyBoxHeight);
-            
-            // Draw goal boxes
-            // Left goal box
-            ctx.strokeRect(0, (fieldHeight - goalBoxHeight) / 2, goalBoxWidth, goalBoxHeight);
-            // Right goal box
-            ctx.strokeRect(fieldWidth - goalBoxWidth, (fieldHeight - goalBoxHeight) / 2, goalBoxWidth, goalBoxHeight);
-            
-            // Draw goals
-            // Left goal
-            ctx.strokeRect(-2, (fieldHeight - goalWidth) / 2, 2, goalWidth);
-            // Right goal
-            ctx.strokeRect(fieldWidth, (fieldHeight - goalWidth) / 2, 2, goalWidth);
-            
-            // Draw penalty spots
-            ctx.fillStyle = 'rgba(150, 150, 150, 0.5)';
-            // Left penalty spot
-            ctx.beginPath();
-            ctx.arc(11, fieldHeight / 2, 0.5, 0, Math.PI * 2);
-            ctx.fill();
-            // Right penalty spot
-            ctx.beginPath();
-            ctx.arc(fieldWidth - 11, fieldHeight / 2, 0.5, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          
-          drawPitch(ctx);
+         
           ctx.restore();
         }
       }]
