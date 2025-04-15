@@ -193,6 +193,7 @@
       
       <div class="shot-map-wrapper">
         <img src="../images/football-pitch.png" class="pitch-background" alt="Football pitch" />
+        <div class="player-name" id="playerNameDisplay"></div>
         <canvas id="shotChart" width="796" height="485"></canvas>
       </div>      
       
@@ -444,14 +445,14 @@
       type: 'scatter',
       data: {
       datasets: [{
-    label: 'Shots',
-    data: chartData,
-    backgroundColor: chartData.map(s => colorMap[s.result] || 'gray'),
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderWidth: 0.5,
-    radius: chartData.map(s => Math.max(4, s.xG * 20)),
-    pointStyle: 'circle',
-    hoverRadius: 10
+        label: 'Shots',
+        data: [],
+        backgroundColor: [],
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 0.5,
+        radius: [],
+        pointStyle: 'circle',
+        hoverRadius: 10,
   }]
 }
 ,
