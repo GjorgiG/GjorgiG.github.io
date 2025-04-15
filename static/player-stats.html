@@ -286,41 +286,46 @@
     }
 
     function fetchAllSeasonsShots(playerId, playerName) {
-      currentPlayerId = playerId;
-      playerNameDisplay.textContent = playerName;
-      statsDiv.innerHTML = '<p>Loading...</p>';
-      
-      const seasons = ["2020", "2021", "2022"];
-      allShots = [];
-      
-      Promise.all(seasons.map(season => 
-        fetch(`https://player-stats-rk79.onrender.com/get_shots?player_id=${playerId}&season=${season}`)
-          .then(res => res.json())
-          .catch(err => [])
-      ))
-      .then(results => {
-        // Combine all seasons
-        results.forEach(shotArr => {
-          if (Array.isArray(shotArr)) {
-            allShots = [...allShots, ...shotArr];
-          }
-        });
-        
-        statsDiv.innerHTML = '';
-        
-        if (!allShots.length) {
-          statsDiv.innerHTML = '<p>No shots found for this player.</p>';
-          return;
-        }
-        
-        displayShotStats(allShots);
-        renderShotMap(allShots);
-      })
-      .catch(err => {
-        console.error(err);
-        statsDiv.innerHTML = '<p>Error loading shot data</p>';
-      });
+  currentPlayerId = playerId;
+  
+  // Check if playerNameDisplay exists before setting its text content
+  if (playerNameDisplay) {
+    playerNameDisplay.textContent = playerName;
+  }
+  
+  statsDiv.innerHTML = '<p>Loading...</p>';
+  
+  const seasons = ["2020", "2021", "2022"];
+  allShots = [];
+  
+  Promise.all(seasons.map(season => 
+    fetch(`https://player-stats-rk79.onrender.com/get_shots?player_id=${playerId}&season=${season}`)
+      .then(res => res.json())
+      .catch(err => [])
+  ))
+  .then(results => {
+    // Combine all seasons
+    results.forEach(shotArr => {
+      if (Array.isArray(shotArr)) {
+        allShots = [...allShots, ...shotArr];
+      }
+    });
+    
+    statsDiv.innerHTML = '';
+    
+    if (!allShots.length) {
+      statsDiv.innerHTML = '<p>No shots found for this player.</p>';
+      return;
     }
+    
+    displayShotStats(allShots);
+    renderShotMap(allShots);
+  })
+  .catch(err => {
+    console.error(err);
+    statsDiv.innerHTML = '<p>Error loading shot data</p>';
+  });
+}
     
     function filterShots() {
       if (!allShots.length) return;
@@ -363,81 +368,86 @@
     }
 
     function renderShotMap(shots) {
-      const ctx = document.getElementById('shotChart').getContext('2d');
-    
+  const ctx = document.getElementById('shotChart').getContext('2d');
+  
+  // Colors for different results
+  const colorMap = {
+    Goal: 'green',
+    MissedShots: 'red',
+    BlockedShot: 'orange',
+    SavedShot: 'blue',
+    ShotOnPost: 'purple',
+    '': 'gray'
+  };
 
-      // Map shot data into chart points
-      const chartData = shots.map(shot => ({
-        x: parseFloat(shot.X) * 796, // new pitch width
-        y: (1 - parseFloat(shot.Y)) * 485, // new pitch height, flipped
-        xG: parseFloat(shot.xG || 0.05),
-        result: shot.result
-      }));
+  // Destroy old chart if exists
+  if (window.shotChartInstance) {
+    window.shotChartInstance.destroy();
+  }
 
-      // Colors for different results
-      const colorMap = {
-        Goal: 'green',
-        MissedShots: 'red',
-        BlockedShot: 'orange',
-        SavedShot: 'blue',
-        ShotOnPost: 'purple',
-        '': 'gray'
-      };
+  // Process the shot data
+  const data = shots.map(shot => ({
+    x: parseFloat(shot.X) * 796,
+    y: (1 - parseFloat(shot.Y)) * 485,
+    r: Math.max(3, Math.min(15, parseFloat(shot.xG || 0.05) * 30)), // Dynamic radius based on xG
+    result: shot.result
+  }));
 
-      // Destroy old chart if exists
-      if (window.shotChartInstance) {
-        window.shotChartInstance.destroy();
-      }
+  // Create dataset with proper color mapping
+  const pointBackgroundColors = data.map(point => colorMap[point.result] || 'gray');
+  const pointRadiuses = data.map(point => point.r);
 
-      // Create new chart
-      window.shotChartInstance = new Chart(ctx, {
-        type: 'scatter',
-        data: {
-          datasets: [{
-            label: 'Shots',
-            data: [],
-            backgroundColor: [],
-            radius:[]
-          }]
-        },
-        options: {
-  responsive: true,
-  maintainAspectRatio: false,
-  layout: {
-    padding: 20
-  },
-  plugins: {
-    tooltip: { /* unchanged */ },
-    legend: { display: false }
-  },
-  scales: {
-    x: {
-      min: 0,
-      max: 796,
-      display: false,
-      grid: { display: false }
+  // Create new chart
+  window.shotChartInstance = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: 'Shots',
+        data: data.map(point => ({ x: point.x, y: point.y })),
+        backgroundColor: pointBackgroundColors,
+        borderColor: 'rgba(255,255,255,0.5)',
+        borderWidth: 1,
+        radius: pointRadiuses,
+        pointStyle: 'circle',
+        hoverRadius: 12
+      }]
     },
-    y: {
-      min: 0,
-      max: 485,
-      display: false,
-      grid: { display: false }
-    }
-  },
-  animation: false
-},
-        plugins: [{
-          beforeDraw: function(chart) {
-            const ctx = chart.ctx;
-            ctx.save();
-            ctx.fillStyle = "#f9f9f9";
-            ctx.fillRect(0, 0, chart.width, chart.height);
-          
-            ctx.restore();
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: 20
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const index = context.dataIndex;
+              const shot = shots[index];
+              return `xG: ${parseFloat(shot.xG || 0).toFixed(2)}, Result: ${shot.result}`;
+            }
           }
-        }]
-      });
+        },
+        legend: { display: false }
+      },
+      scales: {
+        x: {
+          min: 0,
+          max: 796,
+          display: false,
+          grid: { display: false }
+        },
+        y: {
+          min: 0,
+          max: 485,
+          display: false,
+          grid: { display: false }
+        }
+      },
+      animation: false
     }
+  });
+}
 
     // Initialize with empty chart and pitch
     const ctx = document.getElementById('shotChart').getContext('2d');
