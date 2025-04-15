@@ -76,6 +76,8 @@
       width: 100%;
       display: flex;
       justify-content: center;
+      flex-direction: column;
+      align-items: center;
     }
     
     .api-results {
@@ -84,6 +86,48 @@
     
     .search-wrapper {
       position: relative;
+    }
+    
+    .player-name {
+      font-size: 2.5rem;
+      color: #333;
+      opacity: 0.3;
+      text-align: center;
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      z-index: 1;
+    }
+    
+    .legend {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .filters select {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
@@ -113,8 +157,56 @@
     </div>
 
     <div class="shot-map-container">
+      <div class="filters">
+        <select id="seasonFilter">
+          <option value="All">All Seasons</option>
+          <option value="2022" selected>2022/23</option>
+          <option value="2021">2021/22</option>
+          <option value="2020">2020/21</option>
+        </select>
+        <select id="situationFilter">
+          <option value="All" selected>All Situations</option>
+          <option value="OpenPlay">Open Play</option>
+          <option value="SetPiece">Set Piece</option>
+          <option value="FastBreak">Fast Break</option>
+          <option value="Penalty">Penalty</option>
+        </select>
+        <select id="resultFilter">
+          <option value="All" selected>All Results</option>
+          <option value="Goal">Goals</option>
+          <option value="MissedShots">Missed Shots</option>
+          <option value="BlockedShot">Blocked Shots</option>
+          <option value="SavedShot">Saved Shots</option>
+          <option value="ShotOnPost">Shot On Post</option>
+        </select>
+      </div>
+      
       <div class="shot-map-wrapper">
+        <div class="player-name" id="playerNameDisplay"></div>
         <canvas id="shotChart" width="800" height="550"></canvas>
+      </div>
+      
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: green;"></div>
+          <span>Goal</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: red;"></div>
+          <span>Missed</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: orange;"></div>
+          <span>Blocked</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: blue;"></div>
+          <span>Saved</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: purple;"></div>
+          <span>Post</span>
+        </div>
       </div>
     </div>
     
@@ -135,8 +227,26 @@
     const searchInput = document.getElementById('playerSearch');
     const resultsList = document.getElementById('playerResults');
     const statsDiv = document.getElementById('stats');
+    const playerNameDisplay = document.getElementById('playerNameDisplay');
+    const seasonFilter = document.getElementById('seasonFilter');
+    const situationFilter = document.getElementById('situationFilter');
+    const resultFilter = document.getElementById('resultFilter');
+    
+    let currentPlayerId = null;
+    let allShots = [];
 
-    searchButton.addEventListener('click', () => {
+    searchButton.addEventListener('click', searchPlayers);
+    searchInput.addEventListener('keyup', function(event) {
+      if (event.key === "Enter") {
+        searchPlayers();
+      }
+    });
+    
+    seasonFilter.addEventListener('change', filterShots);
+    situationFilter.addEventListener('change', filterShots);
+    resultFilter.addEventListener('change', filterShots);
+
+    function searchPlayers() {
       const query = searchInput.value.trim();
       resultsList.innerHTML = '';
       statsDiv.innerHTML = '';
@@ -155,96 +265,246 @@
             const li = document.createElement('li');
             li.textContent = `${player.player_name} (${player.team})`;
             li.addEventListener('click', () => {
-              fetchShots(player.id);
+              fetchAllSeasonsShots(player.id, player.player_name);
               resultsList.innerHTML = '';
               searchInput.value = player.player_name;
             });
             resultsList.appendChild(li);
           });
         });
-    });
-
-    function fetchShots(playerId) {
-      statsDiv.innerHTML = '<p>Loading...</p>';
-      fetch(`https://player-stats-rk79.onrender.com/get_shots?player_id=${playerId}&season=2022`)
-        .then(res => res.json())
-        .then(shots => {
-          statsDiv.innerHTML = '';
-
-          if (!shots || !shots.length) {
-            statsDiv.innerHTML = '<p>No shots found for this player.</p>';
-            return;
-          }
-
-          const ctx = document.getElementById('shotChart').getContext('2d');
-
-          // Map shot data into chart points
-          const chartData = shots.map(shot => ({
-            x: parseFloat(shot.X) * 120,
-            y: (1 - parseFloat(shot.Y)) * 80,
-            xG: parseFloat(shot.xG),
-            result: shot.result
-          }));
-
-          // Colors for different results
-          const colorMap = {
-            Goal: 'green',
-            MissedShots: 'red',
-            BlockedShot: 'orange',
-            SavedShot: 'blue',
-            ShotOnPost: 'purple',
-            '': 'gray'
-          };
-
-          // Destroy old chart if exists
-          if (window.shotChartInstance) {
-            window.shotChartInstance.destroy();
-          }
-
-          // Create new chart
-          window.shotChartInstance = new Chart(ctx, {
-            type: 'scatter',
-            data: {
-              datasets: [{
-                label: 'Shots',
-                data: chartData,
-                backgroundColor: chartData.map(s => colorMap[s.result] || 'gray'),
-                radius: chartData.map(s => s.xG * 15), // xG influences circle size
-              }]
-            },
-            options: {
-              plugins: {
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      const shot = context.raw;
-                      return `xG: ${shot.xG.toFixed(2)}, Result: ${shot.result}`;
-                    }
-                  }
-                }
-              },
-              scales: {
-                x: {
-                  min: 0,
-                  max: 120,
-                  display: false
-                },
-                y: {
-                  min: 0,
-                  max: 80,
-                  display: false
-                }
-              }
-            }
-          });
-        })
-        .catch(err => {
-          console.error(err);
-          statsDiv.innerHTML = '<p>Error loading shot data</p>';
-        });
     }
 
-    // Initialize an empty chart
+    function fetchAllSeasonsShots(playerId, playerName) {
+      currentPlayerId = playerId;
+      playerNameDisplay.textContent = playerName;
+      statsDiv.innerHTML = '<p>Loading...</p>';
+      
+      const seasons = ["2020", "2021", "2022"];
+      allShots = [];
+      
+      Promise.all(seasons.map(season => 
+        fetch(`https://player-stats-rk79.onrender.com/get_shots?player_id=${playerId}&season=${season}`)
+          .then(res => res.json())
+          .catch(err => [])
+      ))
+      .then(results => {
+        // Combine all seasons
+        results.forEach(shotArr => {
+          if (Array.isArray(shotArr)) {
+            allShots = [...allShots, ...shotArr];
+          }
+        });
+        
+        statsDiv.innerHTML = '';
+        
+        if (!allShots.length) {
+          statsDiv.innerHTML = '<p>No shots found for this player.</p>';
+          return;
+        }
+        
+        displayShotStats(allShots);
+        renderShotMap(allShots);
+      })
+      .catch(err => {
+        console.error(err);
+        statsDiv.innerHTML = '<p>Error loading shot data</p>';
+      });
+    }
+    
+    function filterShots() {
+      if (!allShots.length) return;
+      
+      let filteredShots = [...allShots];
+      
+      // Apply season filter
+      if (seasonFilter.value !== 'All') {
+        filteredShots = filteredShots.filter(shot => shot.season === seasonFilter.value);
+      }
+      
+      // Apply situation filter
+      if (situationFilter.value !== 'All') {
+        filteredShots = filteredShots.filter(shot => shot.situation === situationFilter.value);
+      }
+      
+      // Apply result filter
+      if (resultFilter.value !== 'All') {
+        filteredShots = filteredShots.filter(shot => shot.result === resultFilter.value);
+      }
+      
+      renderShotMap(filteredShots);
+      displayShotStats(filteredShots);
+    }
+    
+    function displayShotStats(shots) {
+      const goals = shots.filter(shot => shot.result === 'Goal').length;
+      const totalShots = shots.length;
+      const totalxG = shots.reduce((sum, shot) => sum + parseFloat(shot.xG || 0), 0).toFixed(2);
+      
+      statsDiv.innerHTML = `
+        <div style="margin-top: 2rem; text-align: center;">
+          <h3>Shot Statistics</h3>
+          <p>Total Shots: ${totalShots}</p>
+          <p>Goals: ${goals}</p>
+          <p>Expected Goals (xG): ${totalxG}</p>
+          <p>Conversion Rate: ${totalShots ? ((goals / totalShots) * 100).toFixed(1) : 0}%</p>
+        </div>
+      `;
+    }
+
+    function renderShotMap(shots) {
+      const ctx = document.getElementById('shotChart').getContext('2d');
+      
+      // Draw a football pitch
+      function drawPitch(ctx) {
+        // Field dimensions
+        const fieldWidth = 120;
+        const fieldHeight = 80;
+        const penaltyBoxWidth = 44;
+        const penaltyBoxHeight = 18;
+        const goalBoxWidth = 20;
+        const goalBoxHeight = 6;
+        const centerCircleRadius = 10;
+        const goalWidth = 8;
+        
+        ctx.save();
+        
+        // Draw field outline
+        ctx.strokeStyle = 'rgba(150, 150, 150, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(0, 0, fieldWidth, fieldHeight);
+        
+        // Draw halfway line
+        ctx.beginPath();
+        ctx.moveTo(fieldWidth / 2, 0);
+        ctx.lineTo(fieldWidth / 2, fieldHeight);
+        ctx.stroke();
+        
+        // Draw center circle
+        ctx.beginPath();
+        ctx.arc(fieldWidth / 2, fieldHeight / 2, centerCircleRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Draw penalty boxes
+        // Left penalty box
+        ctx.strokeRect(0, (fieldHeight - penaltyBoxHeight) / 2, penaltyBoxWidth, penaltyBoxHeight);
+        // Right penalty box
+        ctx.strokeRect(fieldWidth - penaltyBoxWidth, (fieldHeight - penaltyBoxHeight) / 2, penaltyBoxWidth, penaltyBoxHeight);
+        
+        // Draw goal boxes
+        // Left goal box
+        ctx.strokeRect(0, (fieldHeight - goalBoxHeight) / 2, goalBoxWidth, goalBoxHeight);
+        // Right goal box
+        ctx.strokeRect(fieldWidth - goalBoxWidth, (fieldHeight - goalBoxHeight) / 2, goalBoxWidth, goalBoxHeight);
+        
+        // Draw goals
+        // Left goal
+        ctx.strokeRect(-2, (fieldHeight - goalWidth) / 2, 2, goalWidth);
+        // Right goal
+        ctx.strokeRect(fieldWidth, (fieldHeight - goalWidth) / 2, 2, goalWidth);
+        
+        // Draw penalty spots
+        ctx.fillStyle = 'rgba(150, 150, 150, 0.5)';
+        // Left penalty spot
+        ctx.beginPath();
+        ctx.arc(11, fieldHeight / 2, 0.5, 0, Math.PI * 2);
+        ctx.fill();
+        // Right penalty spot
+        ctx.beginPath();
+        ctx.arc(fieldWidth - 11, fieldHeight / 2, 0.5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+      }
+
+      // Map shot data into chart points
+      const chartData = shots.map(shot => ({
+        x: parseFloat(shot.X) * 120,
+        y: (1 - parseFloat(shot.Y)) * 80,
+        xG: parseFloat(shot.xG || 0.05),
+        result: shot.result
+      }));
+
+      // Colors for different results
+      const colorMap = {
+        Goal: 'green',
+        MissedShots: 'red',
+        BlockedShot: 'orange',
+        SavedShot: 'blue',
+        ShotOnPost: 'purple',
+        '': 'gray'
+      };
+
+      // Destroy old chart if exists
+      if (window.shotChartInstance) {
+        window.shotChartInstance.destroy();
+      }
+
+      // Create new chart
+      window.shotChartInstance = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Shots',
+            data: chartData,
+            backgroundColor: chartData.map(s => colorMap[s.result] || 'gray'),
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            radius: chartData.map(s => Math.max(5, s.xG * 20)), // xG influences circle size with minimum size
+            pointHoverRadius: chartData.map(s => Math.max(5, s.xG * 20) + 2),
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const shot = context.raw;
+                  return `xG: ${shot.xG.toFixed(2)}, Result: ${shot.result}`;
+                }
+              }
+            },
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              min: 0,
+              max: 120,
+              display: false,
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              min: 0,
+              max: 80,
+              display: false,
+              grid: {
+                display: false
+              }
+            }
+          },
+          animation: {
+            duration: 0
+          }
+        },
+        plugins: [{
+          beforeDraw: function(chart) {
+            const ctx = chart.ctx;
+            ctx.save();
+            ctx.fillStyle = "#f9f9f9";
+            ctx.fillRect(0, 0, chart.width, chart.height);
+            drawPitch(ctx);
+            ctx.restore();
+          }
+        }]
+      });
+    }
+
+    // Initialize with empty chart and pitch
     const ctx = document.getElementById('shotChart').getContext('2d');
     window.shotChartInstance = new Chart(ctx, {
       type: 'scatter',
@@ -257,6 +517,8 @@
         }]
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           tooltip: {
             callbacks: {
@@ -264,21 +526,99 @@
                 return '';
               }
             }
+          },
+          legend: {
+            display: false
           }
         },
         scales: {
           x: {
             min: 0,
             max: 120,
-            display: false
+            display: false,
+            grid: {
+              display: false
+            }
           },
           y: {
             min: 0,
             max: 80,
-            display: false
+            display: false,
+            grid: {
+              display: false
+            }
           }
         }
-      }
+      },
+      plugins: [{
+        beforeDraw: function(chart) {
+          const ctx = chart.ctx;
+          ctx.save();
+          ctx.fillStyle = "#f9f9f9";
+          ctx.fillRect(0, 0, chart.width, chart.height);
+          
+          // Draw a football pitch
+          function drawPitch(ctx) {
+            // Field dimensions
+            const fieldWidth = 120;
+            const fieldHeight = 80;
+            const penaltyBoxWidth = 44;
+            const penaltyBoxHeight = 18;
+            const goalBoxWidth = 20;
+            const goalBoxHeight = 6;
+            const centerCircleRadius = 10;
+            const goalWidth = 8;
+            
+            // Draw field outline
+            ctx.strokeStyle = 'rgba(150, 150, 150, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, fieldWidth, fieldHeight);
+            
+            // Draw halfway line
+            ctx.beginPath();
+            ctx.moveTo(fieldWidth / 2, 0);
+            ctx.lineTo(fieldWidth / 2, fieldHeight);
+            ctx.stroke();
+            
+            // Draw center circle
+            ctx.beginPath();
+            ctx.arc(fieldWidth / 2, fieldHeight / 2, centerCircleRadius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Draw penalty boxes
+            // Left penalty box
+            ctx.strokeRect(0, (fieldHeight - penaltyBoxHeight) / 2, penaltyBoxWidth, penaltyBoxHeight);
+            // Right penalty box
+            ctx.strokeRect(fieldWidth - penaltyBoxWidth, (fieldHeight - penaltyBoxHeight) / 2, penaltyBoxWidth, penaltyBoxHeight);
+            
+            // Draw goal boxes
+            // Left goal box
+            ctx.strokeRect(0, (fieldHeight - goalBoxHeight) / 2, goalBoxWidth, goalBoxHeight);
+            // Right goal box
+            ctx.strokeRect(fieldWidth - goalBoxWidth, (fieldHeight - goalBoxHeight) / 2, goalBoxWidth, goalBoxHeight);
+            
+            // Draw goals
+            // Left goal
+            ctx.strokeRect(-2, (fieldHeight - goalWidth) / 2, 2, goalWidth);
+            // Right goal
+            ctx.strokeRect(fieldWidth, (fieldHeight - goalWidth) / 2, 2, goalWidth);
+            
+            // Draw penalty spots
+            ctx.fillStyle = 'rgba(150, 150, 150, 0.5)';
+            // Left penalty spot
+            ctx.beginPath();
+            ctx.arc(11, fieldHeight / 2, 0.5, 0, Math.PI * 2);
+            ctx.fill();
+            // Right penalty spot
+            ctx.beginPath();
+            ctx.arc(fieldWidth - 11, fieldHeight / 2, 0.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          
+          drawPitch(ctx);
+          ctx.restore();
+        }
+      }]
     });
   </script>
 </body>
