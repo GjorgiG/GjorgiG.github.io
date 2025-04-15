@@ -60,14 +60,27 @@
     }
     
     .shot-map-wrapper {
-      width: 900px;
-      height: 600px;
-      margin: 1rem auto;
-      position: relative;
-      border-radius: 10px;
-      background-color: #1e1e1e;
-      border: 1px solid #444;
-    }
+  position: relative;
+  width: 796px;
+  height: 485px;
+  margin: 2rem auto;
+}
+
+.pitch-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+}
+
+#shotChart {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
     
     .shot-map-container {
       width: 100%;
@@ -179,9 +192,9 @@
       </div>
       
       <div class="shot-map-wrapper">
-        <div class="player-name" id="playerNameDisplay"></div>
-        <canvas id="shotChart" width="800" height="550"></canvas>
-      </div>
+        <img src="../images/football-pitch.png" class="pitch-background" alt="Football pitch" />
+        <canvas id="shotChart" width="796" height="485"></canvas>
+      </div>      
       
       <div class="legend">
         <div class="legend-item">
@@ -415,8 +428,8 @@
 
       // Map shot data into chart points
       const chartData = shots.map(shot => ({
-        x: parseFloat(shot.X) * 120,
-        y: (1 - parseFloat(shot.Y)) * 80,
+        x: parseFloat(shot.X) * 796, // new pitch width
+        y: (1 - parseFloat(shot.Y)) * 485, // new pitch height, flipped
         xG: parseFloat(shot.xG || 0.05),
         result: shot.result
       }));
@@ -463,13 +476,13 @@
   scales: {
     x: {
       min: 0,
-      max: 120,
+      max: 796,
       display: false,
       grid: { display: false }
     },
     y: {
       min: 0,
-      max: 80,
+      max: 485,
       display: false,
       grid: { display: false }
     }
