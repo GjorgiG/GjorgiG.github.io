@@ -370,7 +370,6 @@
     function renderShotMap(shots) {
   const ctx = document.getElementById('shotChart').getContext('2d');
   
-  // Colors for different results
   const colorMap = {
     Goal: 'green',
     MissedShots: 'red',
@@ -385,13 +384,17 @@
     window.shotChartInstance.destroy();
   }
 
-  // Process the shot data
-  const data = shots.map(shot => ({
-    x: parseFloat(shot.X) * 796,
-    y: (1 - parseFloat(shot.Y)) * 485,
-    r: Math.max(3, Math.min(15, parseFloat(shot.xG || 0.05) * 30)), // Dynamic radius based on xG
-    result: shot.result
-  }));
+  const data = shots.map(shot => {
+    const xPos = 398 + (parseFloat(shot.X) - 0.5) * 796;
+    const yPos = parseFloat(shot.Y) * 485;
+    
+    return {
+      x: xPos,
+      y: yPos,
+      r: Math.max(3, Math.min(15, parseFloat(shot.xG || 0.05) * 30)),
+      result: shot.result
+    };
+  });
 
   // Create dataset with proper color mapping
   const pointBackgroundColors = data.map(point => colorMap[point.result] || 'gray');
