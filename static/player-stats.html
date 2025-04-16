@@ -385,7 +385,10 @@
   }
 
   const data = shots.map(shot => {
-    const xPos = 398 + (parseFloat(shot.X) - 0.5) * 796;
+    // Center the shots properly relative to the goal
+    // The pitch width is 796px, so we need to center around the middle
+    // Shots typically use X values from 0-1 (with 0.5 being center)
+    const xPos = (parseFloat(shot.X) * 796); // This maps shots across the full width
     const yPos = parseFloat(shot.Y) * 485;
     
     return {
