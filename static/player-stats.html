@@ -386,7 +386,7 @@
   }
 
   const data = shots.map(shot => {
-    const xPos = canvasWidth * (0.5 + (parseFloat(shot.X) - 0.5) * 0.8);
+    const xPos = canvasWidth * (0.2 + 0.6 * shot.X);
     const yPos = canvasHeight * (1 - parseFloat(shot.Y));
     
     return {
