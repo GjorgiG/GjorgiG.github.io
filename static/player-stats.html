@@ -368,7 +368,9 @@
     }
 
     function renderShotMap(shots) {
-  const ctx = document.getElementById('shotChart').getContext('2d');
+      const ctx = document.getElementById('shotChart').getContext('2d');
+      const canvasWidth = ctx.canvas.width;
+      const canvasHeight = ctx.canvas.height;
   
   const colorMap = {
     Goal: 'green',
@@ -384,8 +386,8 @@
   }
 
   const data = shots.map(shot => {
-    const xPos = 796 * (0.5 + (parseFloat(shot.X) - 0.5) * 0.8);
-    const yPos = (1 - parseFloat(shot.Y)) * 485;
+    const xPos = canvasWidth * (0.5 + (parseFloat(shot.X) - 0.5) * 0.8);
+    const yPos = canvasHeight * (1 - parseFloat(shot.Y));
     
     return {
       x: xPos,
