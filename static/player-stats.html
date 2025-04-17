@@ -61,8 +61,8 @@
     
     .shot-map-wrapper {
   position: relative;
-  width: 796px;
-  height: 485px;
+  width: 485px;
+  height: 796px;
   margin: 2rem auto;
 }
 
@@ -194,7 +194,7 @@
       <div class="shot-map-wrapper">
         <img src="../images/football-pitch.png" class="pitch-background" alt="Football pitch" />
         <div class="player-name" id="playerNameDisplay"></div>
-        <canvas id="shotChart" width="796" height="485"></canvas>
+        <canvas id="shotChart" width="485" height="795"></canvas>
       </div>      
       
       <div class="legend">
@@ -384,9 +384,14 @@
   }
 
   const data = shots.map(shot => {
-    const adjustedX = (parseFloat(shot.X) - 0.66) * (796 / 0.34);
-    const xPos = adjustedX - 100;
-    const yPos = (1 - parseFloat(shot.Y)) * 485;
+    const x = parseFloat(shot.X);
+    const y = parseFloat(shot.Y);
+
+    const rotatedX = (1 - y) * 485;
+    const rotatedY = (x - 0.66) * (796 / 0.34);
+
+    const xPos = rotatedX;
+    const yPos = rotatedY;
     
     return {
       x: xPos,
