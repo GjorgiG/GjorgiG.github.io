@@ -384,14 +384,13 @@
   }
 
   const data = shots.map(shot => {
+    const pitchWidth = 796;
+    const pitchHeight = 485;
     const x = parseFloat(shot.X);
     const y = parseFloat(shot.Y);
 
-    const rotatedX = (1 - y) * 485;
-    const rotatedY = (x - 0.66) * (796 / 0.34);
-
-    const xPos = rotatedX;
-    const yPos = rotatedY;
+    const xPos = (1 - y) * pitchWidth;
+    const yPos = (x - 0.66) * (pitchHeight / 0.34);
     
     return {
       x: xPos,
