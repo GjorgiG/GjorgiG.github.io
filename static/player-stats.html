@@ -384,7 +384,7 @@
   }
 
   const data = shots.map(shot => {
-    const normalizedX = (parseFloat(shot.X) - 0.5) / 0.5;
+    const normalizedX = (parseFloat(shot.X) - 0.66) / (1 - 0.66);
     const xPos = normalizedX * 796;
     const yPos = (1 - parseFloat(shot.Y)) * 485;
     
