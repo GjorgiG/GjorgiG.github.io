@@ -220,6 +220,10 @@
         </div>
       </div>
     </div>
+
+    <div style="width: 300px; height: 300px; margin-top: 2rem;" id="radarContainer">
+      <canvas id="radarChart" width="300" height="300"></canvas>
+    </div>
     
     <div id="stats" class="api-results"></div>
   </section>
@@ -326,6 +330,13 @@
     statsDiv.innerHTML = '<p>Error loading shot data</p>';
   });
 }
+
+function fetchRadarStats(playerId) {
+  fetch(`https://player-stats-rk79.onrender.com/get_radar_stats?player_id=${playerId}`)
+    .then(res => res.json())
+    .then(data => renderRadarChart(data))
+    .catch(err => console.error('Radar error', err));
+}
     
     function filterShots() {
       if (!allShots.length) return;
@@ -348,6 +359,7 @@
       }
       
       renderShotMap(filteredShots);
+      fetchRadarStats(playerId);
       displayShotStats(filteredShots);
     }
     
@@ -458,6 +470,57 @@
     }
   });
 }
+
+function renderRadarChart(stats) {
+  if (!stats || Object.keys(stats).length === 0) return;
+
+  const labels = [
+    'G90', 'xG90', 'Sh90', 'A90', 'xA90',
+    'KP90', 'xGChain90', 'xGBuildup90'
+  ];
+
+  const values = [
+    stats.goals?.avg ?? 0,
+    stats.xG?.avg ?? 0,
+    stats.shots?.avg ?? 0,
+    stats.assists?.avg ?? 0,
+    stats.xA?.avg ?? 0,
+    stats.key_passes?.avg ?? 0,
+    stats.xGChain?.avg ?? 0,
+    stats.xGBuildup?.avg ?? 0
+  ];
+
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  if (window.radarInstance) window.radarInstance.destroy();
+
+  window.radarInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Performance',
+        data: values,
+        backgroundColor: 'rgba(0, 255, 0, 0.2)',
+        borderColor: 'limegreen',
+        pointBackgroundColor: 'limegreen'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          angleLines: { display: false },
+          suggestedMin: 0,
+          suggestedMax: Math.max(...values) + 0.5
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
 
     // Initialize with empty chart and pitch
     const ctx = document.getElementById('shotChart').getContext('2d');

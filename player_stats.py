@@ -30,6 +30,23 @@ def get_shots():
     data = loop.run_until_complete(fetch_data(player_id, season))
     return jsonify(data)
 
+@app.route('/get_radar_stats')
+def get_radar_stats():
+    player_id = request.args.get('player_id')
+    if not player_id:
+        return jsonify({'error': 'player_id is required'}), 400
+
+    async def fetch_radar(pid):
+        async with aiohttp.ClientSession() as session:
+            understat = Understat(session)
+            stats = await understat.get_player_stats(player_id=pid, positions=["FW"])
+            return stats[0] if stats else {}
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    data = loop.run_until_complete(fetch_radar(player_id))
+    return jsonify(data)
+
 @app.route('/search_player')
 def search_player():
     name = request.args.get('name', '').lower()
