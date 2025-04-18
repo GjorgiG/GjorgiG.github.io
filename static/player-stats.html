@@ -390,10 +390,10 @@
     const x = parseFloat(shot.X);
     const y = parseFloat(shot.Y);
 
-    const yOffset = 30
+    const yOffset = 50
 
     const xPos = (1 - y) * pitchWidth;
-    const yPos = (x - 0.66) * (pitchHeight / 0.34) - yOffset;
+    const yPos = (x - 0.66) * (pitchHeight / 0.34) + yOffset;
     
     return {
       x: xPos,
