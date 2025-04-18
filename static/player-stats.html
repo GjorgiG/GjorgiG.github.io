@@ -324,6 +324,7 @@
     
     displayShotStats(allShots);
     renderShotMap(allShots);
+    fetchRadarStats(playerId);
   })
   .catch(err => {
     console.error(err);
@@ -331,8 +332,8 @@
   });
 }
 
-function fetchRadarStats(currentPlayerId) {
-  fetch(`https://player-stats-rk79.onrender.com/get_radar_stats?player_id=${playerId}`)
+function fetchRadarStats() {
+  fetch(`https://player-stats-rk79.onrender.com/get_radar_stats?player_id=${currentPlayerId}`)
     .then(res => res.json())
     .then(data => renderRadarChart(data))
     .catch(err => console.error('Radar error', err));
@@ -359,7 +360,6 @@ function fetchRadarStats(currentPlayerId) {
       }
       
       renderShotMap(filteredShots);
-      fetchRadarStats(currentPlayerId);
       displayShotStats(filteredShots);
     }
     
