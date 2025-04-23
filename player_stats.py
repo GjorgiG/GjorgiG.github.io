@@ -111,7 +111,8 @@ def get_similar_players():
             players = []
             for team in teams:
                 try:
-                    team_players = await understat.get_team_players(team_name=team, season="2024")
+                    seasons = target_stats[0].get('season')
+                    team_players = await understat.get_team_players(team_name=team, season=seasons)
                     for player in team_players:
                         player_id = player.get("id")
                         if not player_id or str(player_id) == request.args.get("player_id"):
@@ -119,15 +120,18 @@ def get_similar_players():
                         try:
                             stats = await understat.get_player_stats(player_id=player_id)
                             if not stats:
+                                print(f"Skipping {player['player_name']}: no stats")
                                 continue
                             vec = vectorize(stats[0])
                             sim = cosine_similarity(target_vector, vec)
+                            print(f"Player {player['player_name']} similarity: {sim}")
                             players.append({
                                 "player_name": player["player_name"],
                                 "team": player.get("team", ""),
                                 "similarity": round(sim, 3)
                             })
-                        except:
+                        except Exception as e:
+                            print(f"Error with {player['player_name']}: {e}")
                             continue
                 except:
                     continue
