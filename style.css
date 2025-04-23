@@ -482,3 +482,25 @@ z-index: 1;
   background-color: #f2f2f2;
   font-weight: bold;
 }
+
+.two-column-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.left-column {
+  flex: 1;
+  max-width: 45%;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex: 1;
+  max-width: 50%;
+  gap: 1.5rem;
+}

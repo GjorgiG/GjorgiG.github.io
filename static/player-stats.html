@@ -37,10 +37,12 @@
       <button id="search-button">Search</button>
     </div>
 
-    <div class="content-layout">
+    <div class="content-layout two-column-layout">
+      <div class="left-column">
       <div id="groupedStats" class="api-results" style="margin-top: 2rem;"></div>
+    </div>
     
-      <div class="sidebar">
+      <div class="right-column">
         <div id="radarContainer">
           <canvas id="radarChart" width="300" height="300"></canvas>
         </div>
@@ -49,6 +51,7 @@
           <img src="../images/football-pitch.png" class="pitch-background" />
           <canvas id="shotChart"></canvas>
         </div>
+        
         <div id="stats" class="api-results"></div>
 
         <div class="main-content">
@@ -253,6 +256,7 @@ function renderGroupedStats(stats) {
         <td>${parseFloat(stat.xG).toFixed(2)}</td>
         <td>${stat.assists}</td>
         <td>${parseFloat(stat.xA).toFixed(2)}</td>
+        <td>${stat.shots}</td>
     </tr>`;
     }
 
