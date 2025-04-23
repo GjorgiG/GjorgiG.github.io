@@ -38,6 +38,7 @@
     </div>
 
     <div class="content-layout">
+      <div id="groupedStats" class="api-results" style="margin-top: 2rem;"></div>
     
       <div class="sidebar">
         <div id="radarContainer">
@@ -166,7 +167,7 @@
         });
     }
 
-    function fetchAllSeasonsShots(playerId, playerName) {
+  function fetchAllSeasonsShots(playerId, playerName) {
   currentPlayerId = playerId;
   console.log("Selected player ID:", currentPlayerId);
   
@@ -203,6 +204,7 @@
     displayShotStats(allShots);
     renderShotMap(allShots);
     fetchRadarStats(playerId);
+    fetchGroupedStats(playerId);
   })
   .catch(err => {
     console.error(err);
@@ -218,6 +220,42 @@ function fetchRadarStats() {
       renderRadarChart(data);
     })
     .catch(err => console.error('Radar error', err));
+}
+
+function fetchGroupedStats(playerId) {
+  fetch(`https://player-stats-rk79.onrender.com/get_grouped_stats?player_id=${playerId}`)
+    .then(res => res.json())
+    .then(data => renderGroupedStats(data))
+    .catch(err => console.error('Grouped stats error', err));
+}
+
+function renderGroupedStats(stats) {
+  const groupedDiv = document.getElementById('groupedStats');
+  if (!stats || stats.length === 0) {
+    groupedDiv.innerHTML = "<p>No grouped stats available.</p>";
+    return;
+  }
+
+  let table = `<table class="grouped-table"><thead><tr>
+      <th>Season</th><th>Team</th><th>Position</th><th>Games</th>
+      <th>Goals</th><th>xG</th><th>Assists</th><th>xA</th>
+  </tr></thead><tbody>`;
+
+  stats.forEach(stat => {
+    table += `<tr>
+      <td>${stat.season}</td>
+      <td>${stat.team}</td>
+      <td>${stat.position}</td>
+      <td>${stat.games}</td>
+      <td>${stat.goals}</td>
+      <td>${parseFloat(stat.xG).toFixed(2)}</td>
+      <td>${stat.assists}</td>
+      <td>${parseFloat(stat.xA).toFixed(2)}</td>
+    </tr>`;
+  });
+
+  table += `</tbody></table>`;
+  groupedDiv.innerHTML = table;
 }
     
     function filterShots() {
