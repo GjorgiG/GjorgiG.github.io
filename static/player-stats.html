@@ -231,28 +231,30 @@ function fetchGroupedStats(playerId) {
 
 function renderGroupedStats(stats) {
   const groupedDiv = document.getElementById('groupedStats');
-  if (!stats || stats.length === 0) {
+  const seasons = stats.season;
+
+  if (!seasons || Object.keys(seasons).length === 0) {
     groupedDiv.innerHTML = "<p>No grouped stats available.</p>";
     return;
   }
 
   let table = `<table class="grouped-table"><thead><tr>
-      <th>Season</th><th>Team</th><th>Position</th><th>Games</th>
-      <th>Goals</th><th>xG</th><th>Assists</th><th>xA</th>
+      <th>Season</th><th>Team</th><th>Games</th><th>Goals</th>
+      <th>xG</th><th>Assists</th><th>xA</th><th>Shots</th>
   </tr></thead><tbody>`;
 
-  stats.forEach(stat => {
-    table += `<tr>
-      <td>${stat.season}</td>
-      <td>${stat.team}</td>
-      <td>${stat.position}</td>
-      <td>${stat.games}</td>
-      <td>${stat.goals}</td>
-      <td>${parseFloat(stat.xG).toFixed(2)}</td>
-      <td>${stat.assists}</td>
-      <td>${parseFloat(stat.xA).toFixed(2)}</td>
+    for (const season in seasons) {
+      const stat = seasons[season];
+      table += `<tr>
+        <td>${stat.season}</td>
+        <td>${stat.team}</td>
+        <td>${stat.games}</td>
+        <td>${stat.goals}</td>
+        <td>${parseFloat(stat.xG).toFixed(2)}</td>
+        <td>${stat.assists}</td>
+        <td>${parseFloat(stat.xA).toFixed(2)}</td>
     </tr>`;
-  });
+    }
 
   table += `</tbody></table>`;
   groupedDiv.innerHTML = table;
