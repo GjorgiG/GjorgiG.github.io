@@ -237,6 +237,11 @@
   padding-top: 1rem;
 }
 
+#stats.api-results {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
 .stat-block {
   margin-bottom: 1rem;
   padding-bottom: 1rem;
