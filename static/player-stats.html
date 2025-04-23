@@ -28,7 +28,6 @@
 
   <section class="page-content">
     <h2>Search Player Shots</h2>
-    
     <div class="search-container">
       <label for="playerSearch">Search Player:</label>
       <div class="search-wrapper">
@@ -36,32 +35,6 @@
         <ul id="playerResults" class="dropdown-results"></ul>
       </div>
       <button id="search-button">Search</button>
-    </div>
-
-    <div class="shot-map-meta">
-      <div class="filters">
-        <select id="seasonFilter">
-          <option value="All">All Seasons</option>
-          <option value="2022" selected>2022/23</option>
-          <option value="2021">2021/22</option>
-          <option value="2020">2020/21</option>
-        </select>
-        <select id="situationFilter">
-          <option value="All" selected>All Situations</option>
-          <option value="OpenPlay">Open Play</option>
-          <option value="SetPiece">Set Piece</option>
-          <option value="FastBreak">Fast Break</option>
-          <option value="Penalty">Penalty</option>
-        </select>
-        <select id="resultFilter">
-          <option value="All" selected>All Results</option>
-          <option value="Goal">Goals</option>
-          <option value="MissedShots">Missed Shots</option>
-          <option value="BlockedShot">Blocked Shots</option>
-          <option value="SavedShot">Saved Shots</option>
-          <option value="ShotOnPost">Shot On Post</option>
-        </select>
-      </div>           
     </div>
 
     <div class="content-layout">
@@ -100,6 +73,33 @@
           <img src="../images/football-pitch.png" class="pitch-background" />
           <canvas id="shotChart"></canvas>
         </div>
+
+        <div class="shot-map-meta">
+          <div class="filters">
+            <select id="seasonFilter">
+              <option value="All">All Seasons</option>
+              <option value="2022" selected>2022/23</option>
+              <option value="2021">2021/22</option>
+              <option value="2020">2020/21</option>
+            </select>
+            <select id="situationFilter">
+              <option value="All" selected>All Situations</option>
+              <option value="OpenPlay">Open Play</option>
+              <option value="SetPiece">Set Piece</option>
+              <option value="FastBreak">Fast Break</option>
+              <option value="Penalty">Penalty</option>
+            </select>
+            <select id="resultFilter">
+              <option value="All" selected>All Results</option>
+              <option value="Goal">Goals</option>
+              <option value="MissedShots">Missed Shots</option>
+              <option value="BlockedShot">Blocked Shots</option>
+              <option value="SavedShot">Saved Shots</option>
+              <option value="ShotOnPost">Shot On Post</option>
+            </select>
+          </div>           
+        </div>
+
       </div>
     </div>
   </section>
