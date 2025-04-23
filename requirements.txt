@@ -3,3 +3,4 @@ flask-cors
 understat
 aiohttp
 gunicorn
+numpy

@@ -3,6 +3,7 @@ from understat import Understat
 import asyncio
 import aiohttp
 from flask_cors import CORS
+import numpy as np
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -63,6 +64,81 @@ def get_grouped_stats():
     asyncio.set_event_loop(loop)
     data = loop.run_until_complete(fetch_grouped(player_id))
     return jsonify(data)
+
+def vectorize(stats):
+    try:
+        minutes = float(stats.get('time', 0)) / 90 or 1
+        return [
+            float(stats.get('goals', 0)) / minutes,
+            float(stats.get('xG', 0)) / minutes,
+            float(stats.get('shots', 0)) / minutes,
+            float(stats.get('assists', 0)) / minutes,
+            float(stats.get('xA', 0)) / minutes,
+            float(stats.get('key_passes', 0)) / minutes,
+            float(stats.get('xGChain', 0)) / minutes,
+            float(stats.get('xGBuildup', 0)) / minutes,
+        ]
+    except:
+        return [0] * 8
+
+def cosine_similarity(a, b):
+    a, b = np.array(a), np.array(b)
+    norm_a = np.linalg.norm(a)
+    norm_b = np.linalg.norm(b)
+    return float(np.dot(a, b) / (norm_a * norm_b)) if norm_a and norm_b else 0
+
+@app.route('/get_similar_players')
+def get_similar_players():
+    player_id = request.args.get('player_id')
+    if not player_id:
+        return jsonify({'error': 'player_id is required'}), 400
+
+    async def fetch_similar():
+        async with aiohttp.ClientSession() as session:
+            understat = Understat(session)
+            try:
+                target_stats = await understat.get_player_stats(player_id=int(player_id))
+                if not target_stats:
+                    return []
+                target_vector = vectorize(target_stats[0])
+            except:
+                return []
+
+            teams = ['Arsenal', 'Aston Villa', 'Bournemouth', 'Brentford', 'Brighton',
+                     'Chelsea', 'Crystal Palace', 'Everton', 'Fulham', 'Ipswich', 'Leicester',
+                     'Liverpool', 'Manchester City', 'Manchester United', 'Newcastle United',
+                     'Nottingham Forest', 'Southampton', 'Tottenham', 'West Ham', 'Wolverhampton Wanderers']
+            players = []
+            for team in teams:
+                try:
+                    team_players = await understat.get_team_players(team_name=team, season="2024")
+                    for player in team_players:
+                        player_id = player.get("id")
+                        if not player_id or str(player_id) == request.args.get("player_id"):
+                            continue
+                        try:
+                            stats = await understat.get_player_stats(player_id=player_id)
+                            if not stats:
+                                continue
+                            vec = vectorize(stats[0])
+                            sim = cosine_similarity(target_vector, vec)
+                            players.append({
+                                "player_name": player["player_name"],
+                                "team": player.get("team", ""),
+                                "similarity": round(sim, 3)
+                            })
+                        except:
+                            continue
+                except:
+                    continue
+
+            players = sorted(players, key=lambda x: x["similarity"], reverse=True)[:10]
+            return players
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    similar = loop.run_until_complete(fetch_similar())
+    return jsonify(similar)
 
 @app.route('/search_player')
 def search_player():
