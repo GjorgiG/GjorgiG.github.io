@@ -494,6 +494,9 @@ function renderRadarChart(stats) {
     stats.xGBuildup?.avg ?? 0
   ];
 
+  const maxValue = Math.max(...values) || 1;
+  const normalizedValues = values.map(v => v / maxValue);
+
   const ctx = document.getElementById('radarChart').getContext('2d');
   if (window.radarInstance) window.radarInstance.destroy();
 
@@ -503,7 +506,7 @@ function renderRadarChart(stats) {
       labels: labels,
       datasets: [{
         label: 'Performance',
-        data: values,
+        data: normalizedValues,
         backgroundColor: 'rgba(0, 255, 0, 0.2)',
         borderColor: 'limegreen',
         pointBackgroundColor: 'limegreen'
@@ -513,9 +516,16 @@ function renderRadarChart(stats) {
       responsive: true,
       scales: {
         r: {
-          angleLines: { display: false },
-          suggestedMin: 0,
-          suggestedMax: Math.max(...values) + 0.5
+          beginAtZero: true,
+          min: 0,
+          max: 1,
+          ticks: {
+            stepSize: 0.2,
+            callback: val => `${(val * maxValue).toFixed(2)}`
+          },
+          pointLabels: {
+            font: { size: 12 }
+          }
         }
       },
       plugins: {
