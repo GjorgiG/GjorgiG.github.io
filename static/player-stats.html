@@ -38,7 +38,7 @@
       <button id="search-button">Search</button>
     </div>
 
-    <div class="shot-map-container">
+    <div class="shot-map-meta">
       <div class="filters">
         <select id="seasonFilter">
           <option value="All">All Seasons</option>
@@ -290,7 +290,7 @@ function fetchRadarStats() {
     return {
       x: xPos,
       y: yPos,
-      r: Math.max(3, Math.min(15, parseFloat(shot.xG || 0.05) * 30)),
+      r: Math.max(3, Math.min(8, parseFloat(shot.xG || 0.05) * 15)),
       result: shot.result
     };
   });

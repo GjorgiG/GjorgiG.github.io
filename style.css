@@ -411,11 +411,12 @@ z-index: 1;
 }
 
 .sidebar {
-  width: 320px;
+  width: 360px;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  align-items: center;
+  align-items: flex-start;
+  margin-left: auto;
 }
 
 .mini-shot-map {
@@ -443,4 +444,16 @@ z-index: 1;
 
 .api-results {
   margin-top: 2rem;
+}
+
+.shot-map-meta {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.shot-map-meta .filters {
+  margin: 0;
 }
