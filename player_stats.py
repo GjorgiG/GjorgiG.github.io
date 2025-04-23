@@ -39,7 +39,7 @@ def get_radar_stats():
     async def fetch_radar(pid):
         async with aiohttp.ClientSession() as session:
             understat = Understat(session)
-            stats = await understat.get_player_stats(player_id=pid, positions=["FW"])
+            stats = await understat.get_player_stats(player_id=pid)
             return stats[0] if stats else {}
 
     loop = asyncio.new_event_loop()

@@ -291,6 +291,7 @@
 
     function fetchAllSeasonsShots(playerId, playerName) {
   currentPlayerId = playerId;
+  console.log("Selected player ID:", currentPlayerId);
   
   // Check if playerNameDisplay exists before setting its text content
   if (playerNameDisplay) {
@@ -335,7 +336,10 @@
 function fetchRadarStats() {
   fetch(`https://player-stats-rk79.onrender.com/get_radar_stats?player_id=${currentPlayerId}`)
     .then(res => res.json())
-    .then(data => renderRadarChart(data))
+    .then(data => {
+      console.log("Radar stats response:", data);
+      renderRadarChart(data);
+    })
     .catch(err => console.error('Radar error', err));
 }
     
