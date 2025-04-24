@@ -156,8 +156,16 @@ def get_similar_players():
         print(f"Main error: {str(e)}")
         return jsonify([])
 
-@app.route('/search_player')
+@app.route('/search_player', methods=['GET', 'OPTIONS'])
 def search_player():
+
+    if request.method == 'OPTIONS':
+        resp = make_response()
+        resp.headers['Access-Control-Allow-Origin']  = '*'
+        resp.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        return resp
+    
     name = request.args.get('name', '').lower()
     season = request.args.get('season', '2022')
 
@@ -180,12 +188,19 @@ def search_player():
                     continue
             return all_players
 
-    loop = asyncio.get_event_loop()
-    players = loop.run_until_complete(fetch_all_players())
+    try:
+        loop = asyncio.get_event_loop()
+        asyncio.set_event_loop(loop)
+        players = loop.run_until_complete(fetch_all_players())
 
-    matched_players = [p for p in players if name in p['player_name'].lower()]
+        matched_players = [p for p in players if name in p['player_name'].lower()]
 
-    return jsonify(matched_players[:5])
+        return jsonify(matched_players[:5])
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
+    except Exception as e:
+        print(f"[ERROR] search_player: {e}")
+        return jsonify([]), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
