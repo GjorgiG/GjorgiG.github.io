@@ -6,7 +6,7 @@ from flask_cors import CORS
 import numpy as np
 
 app = Flask(__name__, static_folder='static')
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://gjorgig.github.io"}})
 
 @app.route('/')
 def index():
