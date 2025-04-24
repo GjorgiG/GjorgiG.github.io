@@ -9,14 +9,7 @@ import nest_asyncio
 nest_asyncio.apply()
 
 app = Flask(__name__, static_folder='static')
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-
-@app.after_request
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-    response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
-    return response
+CORS(app)
 
 @app.route('/')
 def index():
@@ -94,8 +87,11 @@ def cosine_similarity(a, b):
     norm_b = np.linalg.norm(b)
     return float(np.dot(a, b) / (norm_a * norm_b)) if norm_a and norm_b else 0
 
-@app.route('/get_similar_players')
+@app.route('/get_similar_players', methods=['GET','OPTIONS'])
 def get_similar_players():
+    if request.method == 'OPTIONS':
+        return jsonify([])
+    
     player_id = request.args.get('player_id')
     if not player_id:
         return jsonify({'error': 'player_id is required'}), 400
