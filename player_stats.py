@@ -115,11 +115,11 @@ def get_similar_players():
                 try:
                     team_players = await understat.get_team_players(team_name=team, season=season)
                     for player in team_players:
-                        player_id = player.get("id")
-                        if not player_id or str(player_id) == request.args.get("player_id"):
+                        pid = player.get("id")
+                        if not pid or str(pid) == request.args.get("player_id"):
                             continue
                         try:
-                            stats = await understat.get_player_stats(player_id=player_id)
+                            stats = await understat.get_player_stats(player_id=pid)
                             if not stats:
                                 continue
                             vec = vectorize(stats[0])
