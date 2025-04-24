@@ -4,14 +4,16 @@ import asyncio
 import aiohttp
 from flask_cors import CORS
 import numpy as np
-import sys
+import nest_asyncio
+
+nest_asyncio.apply()
 
 app = Flask(__name__, static_folder='static')
-CORS(app, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 @app.after_request
 def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'https://gjorgig.github.io'
+    response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return response
@@ -34,8 +36,7 @@ def get_shots():
             shots = await understat.get_player_shots(player_id=pid, season=season)
             return shots
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_data(player_id, season))
     return jsonify(data)
 
@@ -51,8 +52,7 @@ def get_radar_stats():
             stats = await understat.get_player_stats(player_id=pid)
             return stats[0] if stats else {}
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_radar(player_id))
     return jsonify(data)
 
@@ -68,8 +68,7 @@ def get_grouped_stats():
             grouped = await understat.get_player_grouped_stats(player_id=pid)
             return grouped
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_grouped(player_id))
     return jsonify(data)
 
@@ -146,8 +145,7 @@ def get_similar_players():
 
             return sorted(players, key=lambda x: x["similarity"], reverse=True)[:10]
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
     similar = loop.run_until_complete(fetch_similar())
     return jsonify(similar)
 
@@ -175,8 +173,7 @@ def search_player():
                     continue
             return all_players
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
     players = loop.run_until_complete(fetch_all_players())
 
     matched_players = [p for p in players if name in p['player_name'].lower()]
