@@ -9,7 +9,7 @@ import nest_asyncio
 nest_asyncio.apply()
 
 app = Flask(__name__, static_folder='static')
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": ["https://gjorgig.github.io", "http://localhost:*"]}})
 
 @app.route('/')
 def index():
@@ -67,7 +67,7 @@ def get_grouped_stats():
 
 def vectorize(stats):
     try:
-        minutes = float(stats.get('time', 0)) / 90 or 1
+        minutes = max(float(stats.get('time', 0)) / 90, 1)
         return [
             float(stats.get('goals', 0)) / minutes,
             float(stats.get('xG', 0)) / minutes,
@@ -78,7 +78,8 @@ def vectorize(stats):
             float(stats.get('xGChain', 0)) / minutes,
             float(stats.get('xGBuildup', 0)) / minutes,
         ]
-    except:
+    except Exception as e:
+        print(f"Vectorization error: {str(e)}")
         return [0] * 8
 
 def cosine_similarity(a, b):
@@ -87,14 +88,8 @@ def cosine_similarity(a, b):
     norm_b = np.linalg.norm(b)
     return float(np.dot(a, b) / (norm_a * norm_b)) if norm_a and norm_b else 0
 
-@app.route('/get_similar_players', methods=['GET','OPTIONS'])
+@app.route('/get_similar_players')
 def get_similar_players():
-    if request.method == 'OPTIONS':
-        response = app.make_default_options_response()
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        return response
     
     player_id = request.args.get('player_id')
     if not player_id:
@@ -112,7 +107,7 @@ def get_similar_players():
                 print(f"[ERROR] Target player stats: {e}")
                 return []
 
-            season = "2024"
+            season = "2023"
             teams = ['Arsenal', 'Aston Villa', 'Bournemouth', 'Brentford', 'Brighton',
                      'Chelsea', 'Crystal Palace', 'Everton', 'Fulham', 'Ipswich', 'Leicester',
                      'Liverpool', 'Manchester City', 'Manchester United', 'Newcastle United',
@@ -144,10 +139,14 @@ def get_similar_players():
                     continue
 
             return sorted(players, key=lambda x: x["similarity"], reverse=True)[:10]
-
-    loop = asyncio.get_event_loop()
-    similar = loop.run_until_complete(fetch_similar())
-    return jsonify(similar)
+        
+    try:
+        loop = asyncio.new_event_loop()
+        similar = loop.run_until_complete(fetch_similar())
+        return jsonify(similar)
+    except Exception as e:
+        print(f"Main error: {str(e)}")
+        return jsonify([])
 
 @app.route('/search_player')
 def search_player():

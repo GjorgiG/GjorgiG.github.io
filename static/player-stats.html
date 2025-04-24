@@ -234,10 +234,23 @@ function fetchGroupedStats(playerId) {
 }
 
 function fetchSimilarPlayers(playerId) {
-  fetch(`https://player-stats-rk79.onrender.com/get_similar_players?player_id=${playerId}`)
-    .then(res => res.json())
-    .then(data => renderSimilarPlayers(data))
-    .catch(err => console.error('Similar players error', err));
+  fetch(`https://player-stats-rk79.onrender.com/get_similar_players?player_id=${playerId}`, {
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => renderSimilarPlayers(data))
+  .catch(err => {
+    console.error('Similar players error:', err);
+    document.getElementById('similarPlayers').innerHTML = '<p>Error loading similar players</p>';
+  });
 }
 
 function renderSimilarPlayers(players) {
