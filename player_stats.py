@@ -67,10 +67,10 @@ def get_grouped_stats():
 
 def safe_float(val):
     try:
-        if isinstance(val, dict) and 'value' in val:
-            return float(val['value'])
+        if isinstance(val, dict):
+            val = val.get('value', 0)
         return float(val)
-    except:
+    except Exception:
         return 0.0
 
 def vectorize(stats):
@@ -123,10 +123,8 @@ def get_similar_players():
                 return []
 
             season = "2023"
-            teams = ['Arsenal', 'Aston Villa', 'Bournemouth', 'Brentford', 'Brighton',
-                     'Chelsea', 'Crystal Palace', 'Everton', 'Fulham', 'Ipswich', 'Leicester',
-                     'Liverpool', 'Manchester City', 'Manchester United', 'Newcastle United',
-                     'Nottingham Forest', 'Southampton', 'Tottenham', 'West Ham', 'Wolverhampton Wanderers']
+            teams = ['Arsenal', 'Chelsea', 'Liverpool', 'Manchester City', 
+                     'Manchester United', 'Tottenham',]
             players = []
             for team in teams:
                 try:
