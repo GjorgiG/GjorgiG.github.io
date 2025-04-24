@@ -151,10 +151,14 @@ def get_similar_players():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         similar = loop.run_until_complete(fetch_similar())
-        return jsonify(similar)
+        response = jsonify(similar)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
     except Exception as e:
         print(f"Main error: {str(e)}")
-        return jsonify([])
+        response = jsonify([])
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
 
 @app.route('/search_player', methods=['GET', 'OPTIONS'])
 def search_player():
