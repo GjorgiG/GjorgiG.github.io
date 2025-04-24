@@ -68,9 +68,9 @@ def get_grouped_stats():
 def safe_float(val):
     try:
         if isinstance(val, dict):
-            val = val.get('value', 0)
+            return float(val.get("value") or 0)
         return float(val)
-    except Exception:
+    except (ValueError, TypeError):
         return 0.0
 
 def vectorize(stats):
@@ -111,7 +111,7 @@ def get_similar_players():
         return jsonify({'error': 'player_id is required'}), 400
 
     async def fetch_similar():
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15)) as session:
             understat = Understat(session)
             try:
                 target_stats = await understat.get_player_stats(player_id=int(player_id))
