@@ -4,3 +4,4 @@ understat
 aiohttp
 gunicorn
 numpy
+nest_asyncio
