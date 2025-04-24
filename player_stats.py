@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from understat import Understat
 import asyncio
 import aiohttp
@@ -9,7 +9,7 @@ import nest_asyncio
 nest_asyncio.apply()
 
 app = Flask(__name__, static_folder='static')
-CORS(app, resources={r"/*": {"origins": ["https://gjorgig.github.io", "http://localhost:*"]}})
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 @app.route('/')
 def index():
@@ -88,8 +88,15 @@ def cosine_similarity(a, b):
     norm_b = np.linalg.norm(b)
     return float(np.dot(a, b) / (norm_a * norm_b)) if norm_a and norm_b else 0
 
-@app.route('/get_similar_players')
+@app.route('/get_similar_players', methods=['OPTIONS', 'GET'])
 def get_similar_players():
+
+    if request.method == 'OPTIONS':
+        resp = make_response()
+        resp.headers['Access-Control-Allow-Origin']  = '*'
+        resp.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        return resp
     
     player_id = request.args.get('player_id')
     if not player_id:
@@ -142,6 +149,7 @@ def get_similar_players():
         
     try:
         loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         similar = loop.run_until_complete(fetch_similar())
         return jsonify(similar)
     except Exception as e:
