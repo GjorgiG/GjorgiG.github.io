@@ -4,9 +4,10 @@ import asyncio
 import aiohttp
 from flask_cors import CORS
 import numpy as np
+import sys
 
 app = Flask(__name__, static_folder='static')
-CORS(app, resources={r"/*": {"origins": "https://gjorgig.github.io"}})
+CORS(app, origins = ["https://gjorgig.github.io"])
 
 @app.route('/')
 def index():
@@ -26,9 +27,9 @@ def get_shots():
             shots = await understat.get_player_shots(player_id=pid, season=season)
             return shots
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    data = loop.run_until_complete(fetch_data(player_id, season))
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    data = asyncio.run(fetch_data(player_id, season))
     return jsonify(data)
 
 @app.route('/get_radar_stats')
@@ -43,9 +44,9 @@ def get_radar_stats():
             stats = await understat.get_player_stats(player_id=pid)
             return stats[0] if stats else {}
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    data = loop.run_until_complete(fetch_radar(player_id))
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    data = asyncio.run(fetch_radar(player_id))
     return jsonify(data)
 
 @app.route('/get_grouped_stats')
@@ -60,9 +61,9 @@ def get_grouped_stats():
             grouped = await understat.get_player_grouped_stats(player_id=pid)
             return grouped
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    data = loop.run_until_complete(fetch_grouped(player_id))
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    data = asyncio.run(fetch_grouped(player_id))
     return jsonify(data)
 
 def vectorize(stats):
@@ -138,10 +139,10 @@ def get_similar_players():
 
             return sorted(players, key=lambda x: x["similarity"], reverse=True)[:10]
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    similar = loop.run_until_complete(fetch_similar())
-    return jsonify(similar)
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    data = asyncio.run(fetch_similar())
+    return jsonify(data)
 
 @app.route('/search_player')
 def search_player():
@@ -167,9 +168,9 @@ def search_player():
                     continue
             return all_players
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    players = loop.run_until_complete(fetch_all_players())
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    players = asyncio.run(fetch_all_players())
 
     matched_players = [p for p in players if name in p['player_name'].lower()]
 
