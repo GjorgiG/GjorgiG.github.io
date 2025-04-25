@@ -512,7 +512,10 @@ function renderRadarChart(stats) {
         tooltip: {
           callbacks: {
             label: function(context) {
-              return `${labels[context.dataIndex]}: ${(values[context.dataIndex]).toFixed(2)}`;
+              const index = context.dataIndex;
+              const rawValue = values[index];
+              const label = labels[index];
+              return `${labels}: ${rawValue.toFixed(2)}`;
             }
           }
         }
