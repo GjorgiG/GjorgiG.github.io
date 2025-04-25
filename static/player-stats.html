@@ -263,14 +263,13 @@ function renderSimilarPlayers(players) {
   let html = `<h3 style="text-align: left;">Similar Players</h3>
               <table class="grouped-table">
               <thead>
-                <tr><th>Rk</th><th>Player</th><th>Team</th><th>Similarity</th></tr>
+                <tr><th>Rk</th><th>Player</th><th>Team</th></tr>
               </thead><tbody>`;
   players.forEach((p, i) => {
     html += `<tr>
       <td>${i + 1}</td>
       <td>${p.player_name}</td>
       <td>${p.team}</td>
-      <td>${(p.similarity * 100).toFixed(1)}%</td>
     </tr>`;
   });
   html += "</tbody></table>";
