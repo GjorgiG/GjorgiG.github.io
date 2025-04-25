@@ -5,7 +5,11 @@ import aiohttp
 from flask_cors import CORS
 import numpy as np
 import nest_asyncio
+import psycopg2
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 nest_asyncio.apply()
 
 app = Flask(__name__, static_folder='static')
@@ -65,36 +69,7 @@ def get_grouped_stats():
     data = loop.run_until_complete(fetch_grouped(player_id))
     return jsonify(data)
 
-def safe_float(val):
-    try:
-        if isinstance(val, dict):
-            return float(val.get("value") or 0)
-        return float(val)
-    except (ValueError, TypeError):
-        return 0.0
-
-def vectorize(stats):
-    try:
-        minutes = max(safe_float(stats.get('time')), 1)
-        return [
-            safe_float(stats.get('goals')) / minutes,
-            safe_float(stats.get('xG')) / minutes,
-            safe_float(stats.get('shots')) / minutes,
-            safe_float(stats.get('assists')) / minutes,
-            safe_float(stats.get('xA')) / minutes,
-            safe_float(stats.get('key_passes')) / minutes,
-            safe_float(stats.get('xGChain')) / minutes,
-            safe_float(stats.get('xGBuildup')) / minutes,
-        ]
-    except Exception as e:
-        print(f"Vectorization error: {e}")
-        return [0] * 8
-
-def cosine_similarity(a, b):
-    a, b = np.array(a), np.array(b)
-    norm_a = np.linalg.norm(a)
-    norm_b = np.linalg.norm(b)
-    return float(np.dot(a, b) / (norm_a * norm_b)) if norm_a and norm_b else 0
+conn = psycopg2.connect(os.environ['DATABASE_URL'])
 
 @app.route('/get_similar_players', methods=['OPTIONS', 'GET'])
 def get_similar_players():
@@ -110,61 +85,35 @@ def get_similar_players():
     if not player_id:
         return jsonify({'error': 'player_id is required'}), 400
 
-    async def fetch_similar():
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15)) as session:
-            understat = Understat(session)
-            try:
-                target_stats = await understat.get_player_stats(player_id=int(player_id))
-                if not target_stats:
-                    return []
-                target_vector = vectorize(target_stats[0])
-            except Exception as e:
-                print(f"[ERROR] Target player stats: {e}")
-                return []
-
-            season = "2023"
-            teams = ['Arsenal', 'Chelsea', 'Liverpool', 'Manchester City', 
-                     'Manchester United', 'Tottenham',]
-            players = []
-            for team in teams:
-                try:
-                    team_players = await understat.get_team_players(team_name=team, season=season)
-                    for player in team_players:
-                        pid = player.get("id")
-                        if not pid or str(pid) == request.args.get("player_id"):
-                            continue
-                        try:
-                            stats = await understat.get_player_stats(player_id=pid)
-                            if not stats:
-                                continue
-                            vec = vectorize(stats[0])
-                            sim = cosine_similarity(target_vector, vec)
-                            players.append({
-                                "player_name": player["player_name"],
-                                "team": player.get("team", ""),
-                                "similarity": round(sim, 3)
-                            })
-                        except Exception as e:
-                            print(f"Skipping {player['player_name']} due to stats error: {e}")
-                            continue
-                except Exception as e:
-                    print(f"Team loop error for {team}: {e}")
-                    continue
-
-            return sorted(players, key=lambda x: x["similarity"], reverse=True)[:10]
-        
     try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        similar = loop.run_until_complete(fetch_similar())
-        response = jsonify(similar)
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
+        c = conn.cursor()
+        c.execute("""
+            SELECT pv.id, pv.name, pv.team, sp.similarity
+            FROM similar_players sp
+            JOIN player_vectors pv ON pv.id = sp.similar_id
+            WHERE sp.player_id = %s
+            ORDER BY sp.similarity DESC
+            LIMIT 10
+        """, (player_id,))
+        similar = c.fetchall()
+
+        results = []
+        for sim in similar:
+            results.append({
+                'player_id': sim[0],
+                'player_name': sim[1],
+                'team': sim[2],
+                'similarity': round(sim[3], 3)
+            })
+        
+        resp = jsonify(results)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
     except Exception as e:
-        print(f"Main error: {str(e)}")
-        response = jsonify([])
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
+        print(f"[ERROR] fetching similar players: {e}")
+        resp = jsonify([])
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
 
 @app.route('/search_player', methods=['GET', 'OPTIONS'])
 def search_player():
