@@ -486,9 +486,7 @@ function renderRadarChart(stats) {
           beginAtZero: true,
           suggestedMax: maxValue,
           ticks: {
-            stepSize: Math.round(maxValue / 5 * 10) / 10,
-            display: true,
-            callback: val => val.toFixed(1)
+            display: false
           },
           grid: {
             color: 'rgba(0,0,0,0.1)'
