@@ -36,7 +36,7 @@ async def precompute_and_store():
                     try:
                         await asyncio.sleep(0.5) 
                         stats = await understat.get_player_grouped_stats(player_id=pid)
-                        seasons = stats.get("seasons")
+                        seasons = stats.get("season")
                         vec = vectorize(seasons)
                         print(f"{name} vector: {vec}")
                         c.execute("""
