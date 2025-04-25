@@ -5,6 +5,5 @@ aiohttp
 gunicorn
 numpy
 nest_asyncio
-os
-psycopg2
-dotenv
+psycopg2-binary
+python-dotenv
