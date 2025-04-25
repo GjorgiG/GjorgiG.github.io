@@ -34,9 +34,10 @@ async def precompute_and_store():
                     pid = player.get("id")
                     name = player.get("player_name")
                     try:
-                        stats = await understat.get_player_stats(player_id=pid)
-                        #print(f"{name} stats[0]: {stats[0]}")
-                        vec = vectorize(stats[0])
+                        await asyncio.sleep(0.5) 
+                        stats = await understat.get_player_grouped_stats(player_id=pid)
+                        seasons = stats.get("seasons")
+                        vec = vectorize(seasons)
                         print(f"{name} vector: {vec}")
                         c.execute("""
                             INSERT INTO player_vectors (id, name, team, vector)

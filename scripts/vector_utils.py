@@ -1,28 +1,34 @@
 import numpy as np
 
-def safe_avg(val):
+def safe_float(val):
     try:
-        if isinstance(val, dict):
-            return float(val.get("avg") or 0)
-        return float(val)
+        return float(val) if val is not None else 0.0
     except (ValueError, TypeError):
         return 0.0
 
-def vectorize(stats):
-    try:
-        return [
-            safe_avg(stats.get('goals')),
-            safe_avg(stats.get('xG')),
-            safe_avg(stats.get('shots')),
-            safe_avg(stats.get('assists')),
-            safe_avg(stats.get('xA')),
-            safe_avg(stats.get('key_passes')),
-            safe_avg(stats.get('xGChain')),
-            safe_avg(stats.get('xGBuildup')),
-        ]
-    except Exception as e:
-        print(f"Vectorization error: {e}")
-        return [0] * 8
+def vectorize(seasons):
+    total_time = 0
+    totals = {
+        'goals': 0,
+        'xG': 0,
+        'shots': 0,
+        'assists': 0,
+        'xA': 0,
+        'key_passes': 0,
+        'xGChain': 0,
+        'xGBuildup': 0,
+    }
+
+    for season in seasons:
+        time = safe_float(season.get('time'))
+        total_time += time
+        for k in totals:
+            totals[k] += safe_float(season.get(k))
+
+    if total_time == 0:
+        return [0.0] * len(totals)
+
+    return [totals[k] / (total_time / 90) for k in totals]
 
 def cosine_similarity(a, b):
     a, b = np.array(a), np.array(b)
