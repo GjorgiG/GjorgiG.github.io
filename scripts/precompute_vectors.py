@@ -35,7 +35,9 @@ async def precompute_and_store():
                     name = player.get("player_name")
                     try:
                         stats = await understat.get_player_stats(player_id=pid)
+                        #print(f"{name} stats[0]: {stats[0]}")
                         vec = vectorize(stats[0])
+                        print(f"{name} vector: {vec}")
                         c.execute("""
                             INSERT INTO player_vectors (id, name, team, vector)
                             VALUES (%s, %s, %s, %s)

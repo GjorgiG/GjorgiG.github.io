@@ -1,25 +1,24 @@
 import numpy as np
 
-def safe_float(val):
+def safe_avg(val):
     try:
         if isinstance(val, dict):
-            return float(val.get("value") or 0)
+            return float(val.get("avg") or 0)
         return float(val)
     except (ValueError, TypeError):
         return 0.0
 
 def vectorize(stats):
     try:
-        minutes = max(safe_float(stats.get('time')), 1)
         return [
-            safe_float(stats.get('goals')) / minutes,
-            safe_float(stats.get('xG')) / minutes,
-            safe_float(stats.get('shots')) / minutes,
-            safe_float(stats.get('assists')) / minutes,
-            safe_float(stats.get('xA')) / minutes,
-            safe_float(stats.get('key_passes')) / minutes,
-            safe_float(stats.get('xGChain')) / minutes,
-            safe_float(stats.get('xGBuildup')) / minutes,
+            safe_avg(stats.get('goals')),
+            safe_avg(stats.get('xG')),
+            safe_avg(stats.get('shots')),
+            safe_avg(stats.get('assists')),
+            safe_avg(stats.get('xA')),
+            safe_avg(stats.get('key_passes')),
+            safe_avg(stats.get('xGChain')),
+            safe_avg(stats.get('xGBuildup')),
         ]
     except Exception as e:
         print(f"Vectorization error: {e}")
