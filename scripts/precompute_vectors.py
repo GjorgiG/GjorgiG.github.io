@@ -10,8 +10,10 @@ load_dotenv()
 
 print("DB URL from env:", os.environ.get('DATABASE_URL'))
 
-teams = ['Arsenal', 'Chelsea', 'Liverpool', 'Manchester City', 'Manchester United', 'Tottenham']
-season = "2023"
+teams = ['Arsenal', 'Aston Villa', 'Bournemouth', 'Brentford', 'Brighton','Chelsea', 'Crystal Palace', 'Everton', 'Fulham', 'Ipswich', 'Leicester',
+         'Liverpool', 'Manchester City', 'Manchester United', 'Newcastle United','Nottingham Forest', 'Southampton', 'Tottenham', 'West Ham', 
+         'Wolverhampton Wanderers']
+season = "2024"
 
 async def precompute_and_store():
     conn = psycopg2.connect(os.environ['DATABASE_URL'])
