@@ -467,9 +467,13 @@ function renderRadarChart(stats) {
       datasets: [{
         label: 'Performance',
         data: normalizedValues,
-        backgroundColor: 'rgba(0, 255, 0, 0.2)',
+        backgroundColor: 'rgba(0, 255, 0, 0.15)',
         borderColor: 'limegreen',
-        pointBackgroundColor: 'limegreen'
+        borderWidth: 2,
+        pointBackgroundColor: 'limegreen',
+        pointBorderColor: 'white',
+        pointHoverRadius: 5,
+        pointRadius: 4
       }]
     },
     options: {
@@ -477,14 +481,6 @@ function renderRadarChart(stats) {
       maintainAspectRatio: false,
       layout: {
         padding: 10
-      },
-      elements: {
-        point: {
-          radius: 4
-        },
-        line: {
-          borderWidth: 2
-        }
       },
       scales: {
         r: {
@@ -494,17 +490,31 @@ function renderRadarChart(stats) {
           ticks: {
             display: false
           },
+          grid: {
+            color: 'rgba(0,0,0,0.1)'
+          },
+          angleLines: {
+            color: 'rgba(0,0,0,0.2)'
+          },
           pointLabels: {
             font: {
-              size: 14,
+              size: 12,
               weight: 'bold'
-            }
+            },
+            color: '#333'
           }
         }
       },
       plugins: {
         legend: {
           display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${labels[context.dataIndex]}: ${(values[context.dataIndex]).toFixed(2)}`;
+            }
+          }
         }
       }
     }
