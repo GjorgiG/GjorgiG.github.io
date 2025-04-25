@@ -454,21 +454,7 @@ function renderRadarChart(stats) {
     stats.xGBuildup?.avg ?? 0
   ];
 
-  const statCaps = {
-    G90: 2.2,
-    xG90: 2.0,
-    Sh90: 8.0,
-    A90: 1.3,
-    xA90: 1.3,
-    KP90: 2.7,
-    xGChain90: 1.8,
-    xGBuildup90: 1.0
-  };
-
-  const normalizedValues = values.map((val, i) => {
-    const cap = statCaps[labels[i]] || 1.0;
-    return Math.min(val / cap, 1);
-  });
+  const maxValue = Math.max(...values) * 1.1 || 1;
 
   const ctx = document.getElementById('radarChart').getContext('2d');
   if (window.radarInstance) window.radarInstance.destroy();
@@ -479,7 +465,7 @@ function renderRadarChart(stats) {
       labels: labels,
       datasets: [{
         label: 'Performance',
-        data: normalizedValues,
+        data: values,
         backgroundColor: 'rgba(0, 255, 0, 0.15)',
         borderColor: 'limegreen',
         borderWidth: 2,
@@ -498,10 +484,9 @@ function renderRadarChart(stats) {
       scales: {
         r: {
           beginAtZero: true,
-          min: 0,
-          max: 1,
+          suggestedMax: maxValue,
           ticks: {
-            stepSize: 0.1,
+            stepSize: Math.round(maxValue / 5 * 10) / 10,
             display: true,
             callback: val => val.toFixed(1)
           },
