@@ -67,28 +67,18 @@ def get_radar_stats():
             if not stats:
                 return {}
 
-            total_minutes = 0.0
-            for s in stats:
-                t = s.get('time')
-                if isinstance(t, dict) and '90s' in t:
-                    total_minutes += safe_float(t['90s']) * 90
-                else:
-                    total_minutes += safe_float(t)
-            if total_minutes == 0:
-                return {}
-            factor = 90 / total_minutes
-            total = lambda k: sum(safe_float(s.get(k)) for s in stats)
-            
-            return {
-                'G90': total('goals') * factor,
-                'xG90': total('xG') * factor,
-                'Sh90': total('shots') * factor,
-                'A90': total('assists') * factor,
-                'xA90': total('xA') * factor,
-                'KP90': total('key_passes') * factor,
-                'xGChain90': total('xGChain') * factor,
-                'xGBuildup90': total('xGBuildup') * factor,
+            row = stats[0]
+            keep = {
+                "G90": "goals_per90",
+                "xG90": "xG_per90",
+                "Sh90": "shots_per90",
+                "A90": "assists_per90",
+                "xA90": "xA_per90",
+                "KP90": "key_passes_per90",
+                "xGChain90": "xGChain_per90",
+                "xGBuildup90": "xGBuildup_per90",
             }
+            return {k: safe_float(row[v]) for k, v in keep.items()}
 
     loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_radar(player_id))
