@@ -53,11 +53,10 @@ def get_radar_stats():
             if not stats or 'season' not in stats:
                 return {}
             
-            season_stats = stats['season'].get(season)
+            season_stats = next((s for s in stats['season'] if s['season'] == season), None)
             if not season_stats:
-                return {}
+                return {}            
             
-            games = float(season_stats.get('games', 1)) or 1
             minutes = float(season_stats.get('time', 1)) or 1
 
             return {
