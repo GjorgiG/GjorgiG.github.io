@@ -67,18 +67,39 @@ def get_radar_stats():
             if not stats:
                 return {}
 
-            row = stats[0]
-            keep = {
-                "G90": "goals_per90",
-                "xG90": "xG_per90",
-                "Sh90": "shots_per90",
-                "A90": "assists_per90",
-                "xA90": "xA_per90",
-                "KP90": "key_passes_per90",
-                "xGChain90": "xGChain_per90",
-                "xGBuildup90": "xGBuildup_per90",
+            totals = {
+                "goals": 0.0, "xG": 0.0, "shots": 0.0,
+                "assists": 0.0, "xA": 0.0, "key_passes": 0.0,
+                "xGChain": 0.0, "xGBuildup": 0.0, "minutes": 0.0
             }
-            return {k: safe_float(row[v]) for k, v in keep.items()}
+
+            for s in stats:
+                totals["minutes"] += safe_float(s.get("time"))         
+                totals["goals"] += safe_float(s.get("goals"))
+                totals["xG"] += safe_float(s.get("xG"))
+                totals["shots"] += safe_float(s.get("shots"))
+                totals["assists"] += safe_float(s.get("assists"))
+                totals["xA"] += safe_float(s.get("xA"))
+                totals["key_passes"] += safe_float(s.get("key_passes"))
+                totals["xGChain"] += safe_float(s.get("xGChain"))
+                totals["xGBuildup"] += safe_float(s.get("xGBuildup"))
+
+            mins = totals["minutes"]
+            if mins == 0:
+                return {}
+
+            per90 = lambda v: v * 90 / mins
+
+            return {
+                "G90": per90(totals["goals"]),
+                "xG90": per90(totals["xG"]),
+                "Sh90": per90(totals["shots"]),
+                "A90": per90(totals["assists"]),
+                "xA90": per90(totals["xA"]),
+                "KP90": per90(totals["key_passes"]),
+                "xGChain90": per90(totals["xGChain"]),
+                "xGBuildup90": per90(totals["xGBuildup"]),
+            }
 
     loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_radar(player_id))
