@@ -37,23 +37,6 @@ def get_shots():
     data = loop.run_until_complete(fetch_data(player_id, season))
     return jsonify(data)
 
-def safe_float(v: object) -> float:
-    if v is None:
-        return 0.0
-    if isinstance(v, (int, float)):
-        return float(v)
-    if isinstance(v, str):
-        try:
-            return float(v or 0)
-        except ValueError:
-            return 0.0
-    if isinstance(v, dict):
-        for key in ('90s', 'n', 'value', 'total', 'sum'):
-            if key in v:
-                return safe_float(v[key])
-        return 0.0
-    return 0.0
-
 @app.route('/get_radar_stats')
 def get_radar_stats():
     player_id = request.args.get('player_id')
@@ -64,42 +47,7 @@ def get_radar_stats():
         async with aiohttp.ClientSession() as session:
             understat = Understat(session)
             stats = await understat.get_player_stats(player_id=pid)
-            if not stats:
-                return {}
-
-            totals = {
-                "goals": 0.0, "xG": 0.0, "shots": 0.0,
-                "assists": 0.0, "xA": 0.0, "key_passes": 0.0,
-                "xGChain": 0.0, "xGBuildup": 0.0, "minutes": 0.0
-            }
-
-            for s in stats:
-                totals["minutes"] += safe_float(s.get("time"))         
-                totals["goals"] += safe_float(s.get("goals"))
-                totals["xG"] += safe_float(s.get("xG"))
-                totals["shots"] += safe_float(s.get("shots"))
-                totals["assists"] += safe_float(s.get("assists"))
-                totals["xA"] += safe_float(s.get("xA"))
-                totals["key_passes"] += safe_float(s.get("key_passes"))
-                totals["xGChain"] += safe_float(s.get("xGChain"))
-                totals["xGBuildup"] += safe_float(s.get("xGBuildup"))
-
-            mins = totals["minutes"]
-            if mins == 0:
-                return {}
-
-            per90 = lambda v: v * 90 / mins
-
-            return {
-                "G90": per90(totals["goals"]),
-                "xG90": per90(totals["xG"]),
-                "Sh90": per90(totals["shots"]),
-                "A90": per90(totals["assists"]),
-                "xA90": per90(totals["xA"]),
-                "KP90": per90(totals["key_passes"]),
-                "xGChain90": per90(totals["xGChain"]),
-                "xGBuildup90": per90(totals["xGBuildup"]),
-            }
+            return stats[0] if stats else {}
 
     loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_radar(player_id))
