@@ -47,7 +47,13 @@ def get_radar_stats():
         async with aiohttp.ClientSession() as session:
             understat = Understat(session)
             stats = await understat.get_player_stats(player_id=pid)
-            return stats[0] if stats else {}
+            if not stats:
+                return {}
+            
+            best = max(stats, key=lambda r: float(r['time']))
+            keys = ['G90', 'xG90', 'Sh90', 'A90',
+                    'xA90', 'KP90', 'xGChain90', 'xGBuildup90']
+            return {k: float(best.get(k, 0)) for k in keys}
 
     loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_radar(player_id))

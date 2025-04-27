@@ -449,18 +449,7 @@ function renderRadarChart(stats) {
     'KP90', 'xGChain90', 'xGBuildup90'
   ];
 
-  const values = [
-    stats.G90 ?? 0,
-    stats.xG90 ?? 0,
-    stats.Sh90 ?? 0,
-    stats.A90 ?? 0,
-    stats.xA90 ?? 0,
-    stats.KP90 ?? 0,
-    stats.xGChain90 ?? 0,
-    stats.xGBuildup90 ?? 0
-  ];
-
-  const maxValue = Math.max(...values) * 1.1 || 1;
+  const values = labels.map(l => parseFloat(stats[l]) || 0);
 
   const ctx = document.getElementById('radarChart').getContext('2d');
   if (window.radarInstance) window.radarInstance.destroy();
@@ -478,35 +467,16 @@ function renderRadarChart(stats) {
         pointBackgroundColor: 'limegreen',
         pointBorderColor: 'white',
         pointHoverRadius: 5,
-        pointRadius: 4
+        pointRadius: 7
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: {
-        padding: 10
-      },
       scales: {
         r: {
           beginAtZero: true,
-          suggestedMax: maxValue,
-          ticks: {
-            display: false
-          },
-          grid: {
-            color: 'rgba(0,0,0,0.1)'
-          },
-          angleLines: {
-            color: 'rgba(0,0,0,0.2)'
-          },
-          pointLabels: {
-            font: {
-              size: 12,
-              weight: 'bold'
-            },
-            color: '#333'
-          }
+          suggestedMax: Math.max(...values) * 1.1 || 1,
         }
       },
       plugins: {
@@ -515,12 +485,8 @@ function renderRadarChart(stats) {
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
-              const index = context.dataIndex;
-              const val = values[index] ?? 0;
-              return `${labels[index]}: ${val.toFixed(2)}`;
+            label: ctx => `${ctx.label}: ${ctx.parsed.r.toFixed(2)}`
             }
-          }
         }
       }
     }
