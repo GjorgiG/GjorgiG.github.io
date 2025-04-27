@@ -37,6 +37,23 @@ def get_shots():
     data = loop.run_until_complete(fetch_data(player_id, season))
     return jsonify(data)
 
+def safe_float(v: object) -> float:
+    if v is None:
+        return 0.0
+    if isinstance(v, (int, float)):
+        return float(v)
+    if isinstance(v, str):
+        try:
+            return float(v or 0)
+        except ValueError:
+            return 0.0
+    if isinstance(v, dict):
+        for key in ('n', 'value', 'total', 'sum'):
+            if key in v:
+                return safe_float(v[key])
+        return 0.0
+    return 0.0
+
 @app.route('/get_radar_stats')
 def get_radar_stats():
     player_id = request.args.get('player_id')
@@ -52,15 +69,15 @@ def get_radar_stats():
             
             f = lambda obj, k: float(obj.get(k, 0) or 0)
             
-            total_minutes = sum(f(s, 'time') for s in stats)
-            total_goals = sum(f(s, 'goals') for s in stats)
-            total_xg = sum(f(s, 'xG') for s in stats)
-            total_shots = sum(f(s, 'shots') for s in stats)
-            total_assists = sum(f(s, 'assists') for s in stats)
-            total_xa = sum(f(s, 'xA') for s in stats)
-            total_key_passes = sum(f(s, 'key_passes') for s in stats)
-            total_xg_chain = sum(f(s, 'xGChain') for s in stats)
-            total_xg_buildup = sum(f(s, 'xGBuildup') for s in stats)
+            total_minutes = sum(safe_float(s.get('time')) for s in stats)
+            total_goals = sum(safe_float(s.get('goals')) for s in stats)
+            total_xg = sum(safe_float(s.get('xG')) for s in stats)
+            total_shots = sum(safe_float(s.get('shots')) for s in stats)
+            total_assists = sum(safe_float(s.get('assists')) for s in stats)
+            total_xa = sum(safe_float(s.get('xA')) for s in stats)
+            total_key_passes = sum(safe_float(s.get('key_passes')) for s in stats)
+            total_xg_chain = sum(safe_float(s.get('xGChain')) for s in stats)
+            total_xg_buildup = sum(safe_float(s.get('xGBuildup')) for s in stats)
 
             if total_minutes == 0:
                 return {}
