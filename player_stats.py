@@ -45,7 +45,7 @@ def get_radar_stats():
     if not player_id or not season:
         return jsonify({'error': 'player_id and season are required'}), 400
 
-    async def fetch_radar(pid):
+    async def fetch_radar(pid, season):
         async with aiohttp.ClientSession() as session:
             understat = Understat(session)
             stats = await understat.get_player_grouped_stats(player_id=pid)
