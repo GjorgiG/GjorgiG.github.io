@@ -67,9 +67,15 @@ def get_radar_stats():
             if not stats:
                 return {}
             
-            f = lambda obj, k: float(obj.get(k, 0) or 0)
+            total_minutes = sum(
+                safe_float(s.get('time', 0)) * 90
+                if isinstance(s.get('time'), dict)
+                else safe_float(s.get('time'))
+                for s in stats
+            )
+            if total_minutes == 0:
+                return {}
             
-            total_minutes = sum(safe_float(s.get('time')) for s in stats)
             total_goals = sum(safe_float(s.get('goals')) for s in stats)
             total_xg = sum(safe_float(s.get('xG')) for s in stats)
             total_shots = sum(safe_float(s.get('shots')) for s in stats)
@@ -78,9 +84,6 @@ def get_radar_stats():
             total_key_passes = sum(safe_float(s.get('key_passes')) for s in stats)
             total_xg_chain = sum(safe_float(s.get('xGChain')) for s in stats)
             total_xg_buildup = sum(safe_float(s.get('xGBuildup')) for s in stats)
-
-            if total_minutes == 0:
-                return {}
             
             factor = 90 / total_minutes
             return {
