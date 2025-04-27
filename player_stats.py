@@ -51,10 +51,17 @@ def get_radar_stats():
                 return {}
             
             best = stats[0]
-            
-            keys = ['G90', 'xG90', 'Sh90', 'A90',
-                    'xA90', 'KP90', 'xGChain90', 'xGBuildup90']
-            return {k: float(best.get(k, 0)) for k in keys}
+
+            return {
+                'G90': float(best['goals']['avg']),
+                'xG90': float(best['xG']['avg']),
+                'Sh90': float(best['shots']['avg']),
+                'A90': float(best['assists']['avg']),
+                'xA90': float(best['xA']['avg']),
+                'KP90': float(best['key_passes']['avg']),
+                'xGChain90': float(best['xGChain']['avg']),
+                'xGBuildup90': float(best['xGBuildup']['avg'])
+            }
 
     loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_radar(player_id))
