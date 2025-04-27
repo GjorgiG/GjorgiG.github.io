@@ -512,7 +512,7 @@ function renderRadarChart(stats) {
             label: function(context) {
               const index = context.dataIndex;
               const val = values[index] ?? 0;
-              return `${labels[index]}: ${rawValue.toFixed(2)}`;
+              return `${labels[index]}: ${val.toFixed(2)}`;
             }
           }
         }
