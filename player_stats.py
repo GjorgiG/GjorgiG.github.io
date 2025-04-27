@@ -48,7 +48,7 @@ def safe_float(v: object) -> float:
         except ValueError:
             return 0.0
     if isinstance(v, dict):
-        for key in ('n', 'value', 'total', 'sum'):
+        for key in ('90s', 'n', 'value', 'total', 'sum'):
             if key in v:
                 return safe_float(v[key])
         return 0.0
@@ -66,35 +66,28 @@ def get_radar_stats():
             stats = await understat.get_player_stats(player_id=pid)
             if not stats:
                 return {}
-            
-            total_minutes = sum(
-                safe_float(s.get('time', 0)) * 90
-                if isinstance(s.get('time'), dict)
-                else safe_float(s.get('time'))
-                for s in stats
-            )
+
+            total_minutes = 0.0
+            for s in stats:
+                t = s.get('time')
+                if isinstance(t, dict) and '90s' in t:
+                    total_minutes += safe_float(t['90s']) * 90
+                else:
+                    total_minutes += safe_float(t)
             if total_minutes == 0:
                 return {}
-            
-            total_goals = sum(safe_float(s.get('goals')) for s in stats)
-            total_xg = sum(safe_float(s.get('xG')) for s in stats)
-            total_shots = sum(safe_float(s.get('shots')) for s in stats)
-            total_assists = sum(safe_float(s.get('assists')) for s in stats)
-            total_xa = sum(safe_float(s.get('xA')) for s in stats)
-            total_key_passes = sum(safe_float(s.get('key_passes')) for s in stats)
-            total_xg_chain = sum(safe_float(s.get('xGChain')) for s in stats)
-            total_xg_buildup = sum(safe_float(s.get('xGBuildup')) for s in stats)
-            
             factor = 90 / total_minutes
+            total = lambda k: sum(safe_float(s.get(k)) for s in stats)
+            
             return {
-                'G90': total_goals * factor,
-                'xG90': total_xg * factor,
-                'Sh90': total_shots * factor,
-                'A90': total_assists * factor,
-                'xA90': total_xa * factor,
-                'KP90': total_key_passes * factor,
-                'xGChain90': total_xg_chain * factor,
-                'xGBuildup90': total_xg_buildup * factor,
+                'G90': total('goals') * factor,
+                'xG90': total('xG') * factor,
+                'Sh90': total('shots') * factor,
+                'A90': total('assists') * factor,
+                'xA90': total('xA') * factor,
+                'KP90': total('key_passes') * factor,
+                'xGChain90': total('xGChain') * factor,
+                'xGBuildup90': total('xGBuildup') * factor,
             }
 
     loop = asyncio.get_event_loop()
