@@ -40,31 +40,39 @@ def get_shots():
 @app.route('/get_radar_stats')
 def get_radar_stats():
     player_id = request.args.get('player_id')
-    if not player_id:
-        return jsonify({'error': 'player_id is required'}), 400
+    season = request.args.get('season')
+
+    if not player_id or not season:
+        return jsonify({'error': 'player_id and season are required'}), 400
 
     async def fetch_radar(pid):
         async with aiohttp.ClientSession() as session:
             understat = Understat(session)
-            stats = await understat.get_player_stats(player_id=pid)
-            if not stats:
+            stats = await understat.get_player_grouped_stats(player_id=pid)
+
+            if not stats or 'season' not in stats:
                 return {}
             
-            best = stats[0]
+            season_stats = stats['season'].get(season)
+            if not season_stats:
+                return {}
+            
+            games = float(season_stats.get('games', 1)) or 1
+            minutes = float(season_stats.get('time', 1)) or 1
 
             return {
-                'G90': float(best['goals']['avg']),
-                'xG90': float(best['xG']['avg']),
-                'Sh90': float(best['shots']['avg']),
-                'A90': float(best['assists']['avg']),
-                'xA90': float(best['xA']['avg']),
-                'KP90': float(best['key_passes']['avg']),
-                'xGChain90': float(best['xGChain']['avg']),
-                'xGBuildup90': float(best['xGBuildup']['avg'])
+                'G90': float(season_stats.get('goals', 0)) / (minutes / 90),
+                'xG90': float(season_stats.get('xG', 0)) / (minutes / 90),
+                'Sh90': float(season_stats.get('shots', 0)) / (minutes / 90),
+                'A90': float(season_stats.get('assists', 0)) / (minutes / 90),
+                'xA90': float(season_stats.get('xA', 0)) / (minutes / 90),
+                'KP90': float(season_stats.get('key_passes', 0)) / (minutes / 90),
+                'xGChain90': float(season_stats.get('xGChain', 0)) / (minutes / 90),
+                'xGBuildup90': float(season_stats.get('xGBuildup', 0)) / (minutes / 90)
             }
 
     loop = asyncio.get_event_loop()
-    data = loop.run_until_complete(fetch_radar(player_id))
+    data = loop.run_until_complete(fetch_radar(player_id, season))
     return jsonify(data)
 
 @app.route('/get_grouped_stats')
