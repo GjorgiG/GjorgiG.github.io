@@ -50,7 +50,8 @@ def get_radar_stats():
             if not stats:
                 return {}
             
-            best = max(stats, key=lambda r: float(r['time']))
+            best = stats[0]
+            
             keys = ['G90', 'xG90', 'Sh90', 'A90',
                     'xA90', 'KP90', 'xGChain90', 'xGBuildup90']
             return {k: float(best.get(k, 0)) for k in keys}

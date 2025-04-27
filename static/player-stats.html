@@ -223,7 +223,7 @@
 }
 
 function fetchRadarStats(playerId) {
-  fetch(`https://player-stats-rk79.onrender.com/get_radar_stats?player_id=${currentPlayerId}`)
+  fetch(`https://player-stats-rk79.onrender.com/get_radar_stats?player_id=${playerId}`)
     .then(res => res.json())
     .then(data => {
       console.log("Radar stats response:", data);
