@@ -444,14 +444,14 @@ function renderRadarChart(stats) {
   ];
 
   const values = [
-    stats.goals?.avg ?? 0,
-    stats.xG?.avg ?? 0,
-    stats.shots?.avg ?? 0,
-    stats.assists?.avg ?? 0,
-    stats.xA?.avg ?? 0,
-    stats.key_passes?.avg ?? 0,
-    stats.xGChain?.avg ?? 0,
-    stats.xGBuildup?.avg ?? 0
+    stats.G90 ?? 0,
+    stats.xG90 ?? 0,
+    stats.Sh90 ?? 0,
+    stats.A90 ?? 0,
+    stats.xA90 ?? 0,
+    stats.KP90 ?? 0,
+    stats.xGChain90 ?? 0,
+    stats.xGBuildup90 ?? 0
   ];
 
   const maxValue = Math.max(...values) * 1.1 || 1;

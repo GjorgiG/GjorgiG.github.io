@@ -47,7 +47,32 @@ def get_radar_stats():
         async with aiohttp.ClientSession() as session:
             understat = Understat(session)
             stats = await understat.get_player_stats(player_id=pid)
-            return stats[0] if stats else {}
+            if not stats:
+                return {}
+            
+            total_minutes = sum(float(s['time']) for s in stats)
+            total_goals = sum(float(s['goals']) for s in stats)
+            total_xg = sum(float(s['xG']) for s in stats)
+            total_shots = sum(float(s['shots']) for s in stats)
+            total_assists = sum(float(s['assists']) for s in stats)
+            total_xa = sum(float(s['xA']) for s in stats)
+            total_key_passes = sum(float(s['key_passes']) for s in stats)
+            total_xg_chain = sum(float(s['xGChain']) for s in stats)
+            total_xg_buildup = sum(float(s['xGBuildup']) for s in stats)
+
+            if total_minutes == 0:
+                return {}
+            
+            return {
+                'G90': total_goals / (total_minutes / 90),
+                'xG90': total_xg / (total_minutes / 90),
+                'Sh90': total_shots / (total_minutes / 90),
+                'A90': total_assists / (total_minutes / 90),
+                'xA90': total_xa / (total_minutes / 90),
+                'KP90': total_key_passes / (total_minutes / 90),
+                'xGChain90': total_xg_chain / (total_minutes / 90),
+                'xGBuildup90': total_xg_buildup / (total_minutes / 90),
+            }
 
     loop = asyncio.get_event_loop()
     data = loop.run_until_complete(fetch_radar(player_id))
