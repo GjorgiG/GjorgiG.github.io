@@ -468,7 +468,7 @@ function renderRadarChart(stats) {
         pointBackgroundColor: 'limegreen',
         pointBorderColor: 'white',
         pointHoverRadius: 5,
-        pointRadius: 7
+        pointRadius: 5
       }]
     },
     options: {
@@ -478,7 +478,10 @@ function renderRadarChart(stats) {
         r: {
           beginAtZero: true,
           suggestedMax: Math.max(...values) * 1.1 || 1,
-        }
+        },
+        ticks: {
+          display: false
+    },
       },
       plugins: {
         legend: {
