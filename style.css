@@ -522,3 +522,15 @@ z-index: 1;
   max-width: 50%;
   gap: 1.5rem;
 }
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.site-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
