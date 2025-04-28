@@ -267,16 +267,56 @@ function renderSimilarPlayers(players) {
     return;
   }
 
+  const teamBadges = {
+      "Arsenal": "../images/badges/arsenal.png",
+      "Aston Villa": "../images/badges/aston villa.png",
+      "Bournemouth": "../images/badges/bournemouth.png",
+      "Brentford": "../images/badges/brentford.png",
+      "Brighton": "../images/badges/brighton.png",
+      "Burnley": "../images/badges/burnley.png",
+      "Cardiff": "../images/badges/cardiff.png",
+      "Chelsea": "../images/badges/chelsea.png",
+      "Everton": "../images/badges/everton.png",
+      "Fulham": "../images/badges/fulham.png",
+      "Hull City": "../images/badges/hull city.png",
+      "Huddersfield": "../images/badges/huddersfield.png",
+      "Ipswich": "../images/badges/ipswich.png",
+      "Leeds": "../images/badges/leeds.png",
+      "Leicester": "../images/badges/leicester.png",
+      "Liverpool": "../images/badges/liverpool.png",
+      "Luton Town": "../images/badges/luton.png",
+      "Manchester City": "../images/badges/man city.png",
+      "Manchester United": "../images/badges/man united.png",
+      "Middlesbrough": "../images/badges/middlesbrough.png",
+      "Newcastle United": "../images/badges/newcastle.png",
+      "Norwich": "../images/badges/norwich.png",
+      "Nottingham Forest": "../images/badges/nottingham forest.png",
+      "Crystal Palace": "../images/badges/palace.png",
+      "Sheffield United": "../images/badges/sheffield united.png",
+      "Southampton": "../images/badges/southampton.png",
+      "Stoke": "../images/badges/stoke.png",
+      "Sunderland": "../images/badges/sunderland.png",
+      "Swansea": "../images/badges/swansea.png",
+      "Tottenham": "../images/badges/tottenham.png",
+      "Watford": "../images/badges/watford.png",
+      "West Ham": "../images/badges/west ham.png",
+      "Wolverhampton Wanderers": "../images/badges/wolves.png"
+};
+
   let html = `<h3 style="text-align: left;">Similar Players</h3>
               <table class="grouped-table">
               <thead>
                 <tr><th>Rk</th><th>Player</th><th>Team</th></tr>
               </thead><tbody>`;
   players.forEach((p, i) => {
+    const badgeSrc = teamBadges[p.team] || '../images/badges/default.png';
     html += `<tr>
       <td>${i + 1}</td>
       <td>${p.player_name}</td>
-      <td>${p.team}</td>
+      <td style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+        <img src="${badgeSrc}" alt="${p.team} badge" style="width: 24px; height: 24px; object-fit: contain;">
+        ${p.team}
+      </td>
     </tr>`;
   });
   html += "</tbody></table>";
