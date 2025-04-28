@@ -62,17 +62,16 @@
 
       <label for="seasonSelect">Season:</label>
       <select id="seasonSelect">
-        <option value="2015">2015</option>
-        <option value="2016">2016</option>
-        <option value="2017">2017</option>
-        <option value="2018">2018</option>
-        <option value="2019">2019</option>
-        <option value="2020">2020</option>
-        <option value="2021">2021</option>
-        <option value="2022">2022</option>
-        <option value="2023">2023</option>
-        <option value="2024">2024</option>
-        <option value="2025" selected>2025</option>
+        <option value="2015">2015/16</option>
+        <option value="2016">2016/17</option>
+        <option value="2017">2017/18</option>
+        <option value="2018">2018/19</option>
+        <option value="2019">2019/20</option>
+        <option value="2020">2020/21</option>
+        <option value="2021">2021/22</option>
+        <option value="2022">2022/23</option>
+        <option value="2023">2023/24</option>
+        <option value="2024" selected>2024/25</option>
       </select>
 
       <button id="fetch-button">Fetch Data</button>
@@ -97,13 +96,48 @@
     const statsDiv = document.getElementById('stats');
     const fetchButton = document.getElementById('fetch-button');
 
+    const teamBadges = {
+      "Arsenal": "../images/badges/arsenal.png",
+      "Aston Villa": "../images/badges/aston villa.png",
+      "Bournemouth": "../images/badges/bournemouth.png",
+      "Brentford": "../images/badges/brentford.png",
+      "Brighton": "../images/badges/brighton.png",
+      "Burnley": "../images/badges/burnley.png",
+      "Cardiff": "../images/badges/cardiff.png",
+      "Chelsea": "../images/badges/chelsea.png",
+      "Everton": "../images/badges/everton.png",
+      "Fulham": "../images/badges/fulham.png",
+      "Hull City": "../images/badges/hull city.png",
+      "Huddersfield": "../images/badges/huddersfield.png",
+      "Ipswich": "../images/badges/ipswich.png",
+      "Leeds": "../images/badges/leeds.png",
+      "Leicester": "../images/badges/leicester.png",
+      "Liverpool": "../images/badges/liverpool.png",
+      "Luton Town": "../images/badges/luton.png",
+      "Manchester City": "../images/badges/man city.png",
+      "Manchester United": "../images/badges/man united.png",
+      "Middlesbrough": "../images/badges/middlesbrough.png",
+      "Newcastle United": "../images/badges/newcastle.png",
+      "Norwich": "../images/badges/norwich.png",
+      "Nottingham Forest": "../images/badges/nottingham forest.png",
+      "Crystal Palace": "../images/badges/palace.png",
+      "Sheffield United": "../images/badges/sheffield united.png",
+      "Southampton": "../images/badges/southampton.png",
+      "Stoke": "../images/badges/stoke.png",
+      "Sunderland": "../images/badges/sunderland.png",
+      "Swansea": "../images/badges/swansea.png",
+      "Tottenham": "../images/badges/tottenham.png",
+      "Watford": "../images/badges/watford.png",
+      "West Ham": "../images/badges/west ham.png",
+      "Wolverhampton Wanderers": "../images/badges/wolves.png"
+};
+
     fetchButton.addEventListener('click', () => {
-      // Read selected team & season from the dropdowns
+      
       const selectedTeam = document.getElementById('teamSelect').value;
       const selectedSeason = document.getElementById('seasonSelect').value;
 
-      // Construct the URL with query parameters
-      // e.g. /get_data?team=Arsenal&season=2023
+      
       const url = `https://gjorgig-github-io.onrender.com/get_data?team=${encodeURIComponent(selectedTeam)}&season=${encodeURIComponent(selectedSeason)}`;
 
       fetch(url)
@@ -142,11 +176,11 @@
           <p><strong>Date & Time:</strong> ${formattedDate}</p>
           <p><strong>xG:</strong> ${xGHome} : ${xGAway}</p>
           <div class="teams-info">
-            <div class="team">
+            <img src="${teamBadges[homeTeam] || '../images/badges/default.png'}" alt="${homeTeam} badge" class="team-badge">
               <span>${homeTeam}</span>
             </div>
             <span class="score">${homeGoals} : ${awayGoals}</span>
-            <div class="team">
+            <img src="${teamBadges[awayTeam] || '../images/badges/default.png'}" alt="${awayTeam} badge" class="team-badge">
               <span>${awayTeam}</span>
             </div>
           </div>
