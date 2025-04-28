@@ -349,7 +349,7 @@ function renderGroupedStats(stats) {
   }
 
   let table = `<table class="grouped-table"><thead><tr>
-      <th>Season</th><th>Team</th><th>Games</th><th>Goals</th>
+      <th>Season</th><th>Team</th><th>Position</th><th>Games</th><th>Goals</th>
       <th>xG</th><th>Assists</th><th>xA</th><th>Shots</th>
   </tr></thead><tbody>`;
 
@@ -358,6 +358,7 @@ function renderGroupedStats(stats) {
       table += `<tr>
         <td>${stat.season}</td>
         <td>${stat.team}</td>
+        <td>${stat.position}</td>
         <td>${stat.games}</td>
         <td>${stat.goals}</td>
         <td>${parseFloat(stat.xG).toFixed(2)}</td>
