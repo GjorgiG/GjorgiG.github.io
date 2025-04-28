@@ -176,12 +176,16 @@
           <p><strong>Date & Time:</strong> ${formattedDate}</p>
           <p><strong>xG:</strong> ${xGHome} : ${xGAway}</p>
           <div class="teams-info">
+            <div class="team">
             <img src="${teamBadges[homeTeam] || '../images/badges/default.png'}" alt="${homeTeam} badge" class="team-badge">
-              <span>${homeTeam}</span>
+              <span class="team-name">${homeTeam}</span>
             </div>
-            <span class="score">${homeGoals} : ${awayGoals}</span>
+            <div class="score">
+              ${homeGoals} : ${awayGoals}
+            </div>
+            <div class="team">
             <img src="${teamBadges[awayTeam] || '../images/badges/default.png'}" alt="${awayTeam} badge" class="team-badge">
-              <span>${awayTeam}</span>
+              <span class="team-name">${awayTeam}</span>
             </div>
           </div>
         `;

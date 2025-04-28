@@ -174,22 +174,29 @@
 .teams-info {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin: 1rem 0;
+  gap: 2rem;
 }
 
 .team-badge {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
-  margin-right: 0.5rem;
+}
+
+.team-name {
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
 }
 
 .team {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 120px;
+  justify-content: center;
 }
 
 .team img {
@@ -200,8 +207,12 @@
 }
 
 .score {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin: 0 1rem;
+  color: #111;
+  min-width: 50px;
+  text-align: center;
 }
 
 .goals-section {
