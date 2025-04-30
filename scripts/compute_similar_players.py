@@ -4,6 +4,7 @@ from vector_utils import cosine_similarity
 import os
 from dotenv import load_dotenv
 
+# loads the database variables
 load_dotenv()
 
 print("DB URL from env:", os.environ.get('DATABASE_URL'))
@@ -23,6 +24,7 @@ c.execute('''
 c.execute("SELECT id, vector FROM player_vectors")
 players = c.fetchall()
 
+# loops through each player to calculate the top 10 most similar for each player
 for pid1, vec1_str in players:
     vec1 = np.array(list(map(float, vec1_str.split(','))))
     scores = []

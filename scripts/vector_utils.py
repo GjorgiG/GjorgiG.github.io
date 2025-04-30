@@ -6,6 +6,7 @@ def safe_float(val):
     except (ValueError, TypeError):
         return 0.0
 
+# converts a list of seasonal stats into p90 vectors
 def vectorize(seasons):
     total_time = 0
     totals = {
@@ -19,6 +20,7 @@ def vectorize(seasons):
         'xGBuildup': 0,
     }
 
+    # sum of total across all seasons
     for season in seasons:
         time = safe_float(season.get('time'))
         total_time += time
@@ -30,6 +32,7 @@ def vectorize(seasons):
 
     return [totals[k] / (total_time / 90) for k in totals]
 
+# calculates the cosine similarity between the two vectors
 def cosine_similarity(a, b):
     a, b = np.array(a), np.array(b)
     norm_a = np.linalg.norm(a)

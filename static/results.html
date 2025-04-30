@@ -24,6 +24,7 @@
   <nav>
     <div class="nav-container">
       <div class="logo-container">
+        <!-- Website favicon -->
         <a href="../index.html">
           <img src="../images/Pitch_Perfect.png" alt="Pitch-Perfect Stats Logo" class="site-logo" />
         </a>
@@ -39,8 +40,9 @@
   </nav>
 
   <section class="page-content">
-    <h2>Have a look at team's results from a particular season</h2>
+    <h2>Have a look at a team's results from a particular season</h2>
     
+    <!-- Dropdown menu for team and seasons-->
     <div style="margin-bottom: 1rem;">
       <label for="teamSelect">Team:</label>
       <select id="teamSelect">
@@ -83,6 +85,7 @@
 
       <button id="fetch-button">Search</button>
       
+      <!-- Stats are displayed here -->
       <div id="stats" class="api-results"></div>  
     </div>
   </section>
@@ -99,10 +102,12 @@
     </div>
   </footer>
 
+  <!-- This script fetches and displays the result-->
   <script>
     const statsDiv = document.getElementById('stats');
     const fetchButton = document.getElementById('fetch-button');
 
+    // Maps the team names to the badges
     const teamBadges = {
       "Arsenal": "../images/badges/arsenal.png",
       "Aston Villa": "../images/badges/aston villa.png",
@@ -157,8 +162,8 @@
         statsDiv.innerHTML = '<p>No matches found.</p>';
         return;
       }
-      
 
+      // This creates the card for each result
       matches.forEach(match => {
         const fixtureCard = document.createElement('div');
         fixtureCard.classList.add('fixture-card');
@@ -168,8 +173,8 @@
         const homeGoals = match.goals.h;
         const awayGoals = match.goals.a;
         const dateTime = match.datetime;
-        const xGHome = match.xG.h;
-        const xGAway = match.xG.a;
+        const xGHome = match.xG.h.toFixed(2);
+        const xGAway = match.xG.a.toFixed(2);
 
         const dateObj = new Date(dateTime);
         const formattedDate = dateObj.toLocaleString([], {
@@ -177,7 +182,7 @@
           timeStyle: 'short'
         });
 
-        
+        // HTML for the fixture card
         fixtureCard.innerHTML = `
           <h3>Premier League</h3>
           <p><strong>Date & Time:</strong> ${formattedDate}</p>

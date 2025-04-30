@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- This imports the library for the charts-->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
   <script>
     const { RadarController, RadialLinearScale, PointElement, LineElement,
             Filler, Tooltip, Legend } = Chart;
@@ -15,6 +16,7 @@
   
   <title>Pitch-Perfect Stats | Player Statistics</title>
 
+  <!-- Importing the Google fonts into each page -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link 
@@ -59,6 +61,7 @@
       <button id="search-button">Search</button>
     </div>
 
+    <!-- A two column layout for stats and the visuals -->
     <div class="content-layout two-column-layout">
       <div class="left-column">
       <div id="groupedStats" class="api-results" style="margin-top: 2rem;"></div>
@@ -141,6 +144,8 @@
     </div>
   </footer>
 
+  <!-- Main script for the actual functionality -->
+
   <script>
     const searchButton = document.getElementById('search-button');
     const searchInput = document.getElementById('playerSearch');
@@ -154,7 +159,7 @@
     let currentPlayerId = null;
     let allShots = [];
 
-    searchButton.addEventListener('click', searchPlayers);
+    searchButton.addEventListener('click', searchPlayers); // This waits for the button to be clicked and then the function is called
     searchInput.addEventListener('keyup', function(event) {
       if (event.key === "Enter") {
         searchPlayers();
@@ -371,7 +376,7 @@ function renderGroupedStats(stats) {
   table += `</tbody></table>`;
   groupedDiv.innerHTML = table;
 }
-    
+    // This filters the shot map based on the dropdown selection
     function filterShots() {
       if (!allShots.length) return;
       

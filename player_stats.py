@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 nest_asyncio.apply()
 
+# initialises the flask app
 app = Flask(__name__, static_folder='static')
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
@@ -57,8 +58,9 @@ def get_radar_stats():
             if not season_stats:
                 return {}            
             
-            minutes = float(season_stats.get('time', 1)) or 1
+            minutes = float(season_stats.get('time', 1)) or 1 # stops division by zero
 
+            # returns the p90 stats
             return {
                 'G90': float(season_stats.get('goals', 0)) / (minutes / 90),
                 'xG90': float(season_stats.get('xG', 0)) / (minutes / 90),
@@ -90,8 +92,10 @@ def get_grouped_stats():
     data = loop.run_until_complete(fetch_grouped(player_id))
     return jsonify(data)
 
+# connects to the postgres database
 conn = psycopg2.connect(os.environ['DATABASE_URL'])
 
+# this finds similar players based on their similarity score
 @app.route('/get_similar_players', methods=['OPTIONS', 'GET'])
 def get_similar_players():
 
@@ -107,7 +111,7 @@ def get_similar_players():
         return jsonify({'error': 'player_id is required'}), 400
 
     try:
-        c = conn.cursor()
+        c = conn.cursor() # this will query the top 10 most similar players and returns it
         c.execute("""
             SELECT pv.id, pv.name, pv.team, sp.similarity
             FROM similar_players sp
@@ -118,6 +122,7 @@ def get_similar_players():
         """, (player_id,))
         similar = c.fetchall()
 
+        # it then formats the results
         results = []
         for sim in similar:
             results.append({
@@ -147,8 +152,9 @@ def search_player():
         return resp
     
     name = request.args.get('name', '').lower()
-    season = request.args.get('season', '2022')
+    season = request.args.get('season', '2024')
 
+    # async fetch for every player in the league
     async def fetch_all_players():
         async with aiohttp.ClientSession() as session:
             understat = Understat(session)
