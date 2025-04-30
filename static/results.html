@@ -173,8 +173,8 @@
         const homeGoals = match.goals.h;
         const awayGoals = match.goals.a;
         const dateTime = match.datetime;
-        const xGHome = match.xG.h.toFixed(2);
-        const xGAway = match.xG.a.toFixed(2);
+        const xGHome = parseFloat(match.xG.h).toFixed(2);
+        const xGAway = parseFloat(match.xG.a).toFixed(2);
 
         const dateObj = new Date(dateTime);
         const formattedDate = dateObj.toLocaleString([], {
