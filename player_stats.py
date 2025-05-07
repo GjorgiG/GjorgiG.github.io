@@ -123,7 +123,7 @@ def get_similar_players():
                 """, (player_id,))
                 similar = c.fetchall()
 
-        results = [{ # this then formats the results into json
+        results = [{ # this then formats the results into JSON
             'player_id': row[0],
             'player_name': row[1],
             'team': row[2],
