@@ -111,27 +111,25 @@ def get_similar_players():
         return jsonify({'error': 'player_id is required'}), 400
 
     try:
-        c = conn.cursor() # this will query the top 10 most similar players and returns it
-        c.execute("""
-            SELECT pv.id, pv.name, pv.team, sp.similarity
-            FROM similar_players sp
-            JOIN player_vectors pv ON pv.id = sp.similar_id
-            WHERE sp.player_id = %s
-            ORDER BY sp.similarity DESC
-            LIMIT 10
-        """, (player_id,))
-        similar = c.fetchall()
+        with psycopg2.connect(os.environ['DATABASE_URL']) as conn: # this queries the database for the similar players
+            with conn.cursor() as c:
+                c.execute("""
+                    SELECT pv.id, pv.name, pv.team, sp.similarity
+                    FROM similar_players sp
+                    JOIN player_vectors pv ON pv.id = sp.similar_id
+                    WHERE sp.player_id = %s
+                    ORDER BY sp.similarity DESC
+                    LIMIT 10
+                """, (player_id,))
+                similar = c.fetchall()
 
-        # it then formats the results
-        results = []
-        for sim in similar:
-            results.append({
-                'player_id': sim[0],
-                'player_name': sim[1],
-                'team': sim[2],
-                'similarity': round(sim[3], 3)
-            })
-        
+        results = [{ # this then formats the results into json
+            'player_id': row[0],
+            'player_name': row[1],
+            'team': row[2],
+            'similarity': round(row[3], 3)
+        } for row in similar]
+
         resp = jsonify(results)
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
