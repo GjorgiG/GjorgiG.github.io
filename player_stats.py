@@ -111,7 +111,7 @@ def get_similar_players():
         return jsonify({'error': 'player_id is required'}), 400
 
     try:
-        with psycopg2.connect(os.environ['DATABASE_URL']) as conn: # this queries the database for the similar players
+        with psycopg2.connect(os.environ['DATABASE_URL']) as conn: # this queries the database for similar players
             with conn.cursor() as c:
                 c.execute("""
                     SELECT pv.id, pv.name, pv.team, sp.similarity
