@@ -177,7 +177,7 @@
 
       if (!query) return;
 
-      fetch(`https://player-stats-rk79.onrender.com/search_player?name=${encodeURIComponent(query)}&season=2022`)
+      fetch(`https://player-stats-rk79.onrender.com/search_player?name=${encodeURIComponent(query)}&season=2024`)
         .then(res => res.json())
         .then(players => {
           if (!players.length) {
@@ -244,7 +244,7 @@
 }
 
 function fetchRadarStats(playerId) {
-  const season = seasonFilter.value === 'All' ? '2022' : seasonFilter.value;
+  const season = seasonFilter.value === 'All' ? '2024' : seasonFilter.value;
   fetch(`https://player-stats-rk79.onrender.com/get_radar_stats?player_id=${playerId}&season=${season}`)
     .then(res => res.json())
     .then(data => {
