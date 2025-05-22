@@ -109,9 +109,13 @@
           <div class="filters">
             <select id="seasonFilter">
               <option value="All" selected>All Seasons</option>
+              <option value="2024">2024/25</option>
+              <option value="2023">2023/24</option>
               <option value="2022">2022/23</option>
               <option value="2021">2021/22</option>
-              <option value="2020">2020/21</option>   
+              <option value="2020">2020/21</option>
+              <option value="2019">2019/20</option>
+              <option value="2018">2018/19</option>   
             </select>
             <select id="situationFilter">
               <option value="All" selected>All Situations</option>
@@ -208,7 +212,7 @@
   
   statsDiv.innerHTML = '<p>Loading...</p>';
   
-  const seasons = ["2020", "2021", "2022"];
+  const seasons = ["2018", "2019", "2020", "2021", "2022", "2023", "2024"];
   allShots = [];
   
   Promise.all(seasons.map(season => 
