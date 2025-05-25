@@ -93,7 +93,7 @@ def get_grouped_stats():
     return jsonify(data)
 
 # connects to the postgres database
-conn = psycopg2.connect(os.environ['DATABASE_URL'])
+# conn = psycopg2.connect(os.environ['DATABASE_URL'])
 
 # this finds similar players based on their similarity score
 @app.route('/get_similar_players', methods=['OPTIONS', 'GET'])
